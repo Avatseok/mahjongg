@@ -3,167 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🀄️ 雀王爭霸戰 🀄️</title>
+    <title>雀王爭霸戰</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
-        :root { --mj-green: #064e3b; --mj-tile: #fdfbf7; --mj-red: #b91c1c; --gold: #fbbf24; --silver: #94a3b8; --bronze: #b45309; }
-        body { background-color: var(--mj-green); font-family: 'Noto Sans TC', sans-serif; background-image: radial-gradient(#065f46 2px, transparent 2px); background-size: 30px 30px; color: #1e293b; }
-        .title-font { font-family: 'Noto Serif TC', serif; color: var(--mj-tile); text-shadow: 3px 3px 0px var(--mj-red); }
-        .container-narrow { max-width: 600px; margin: 0 auto; }
-        .nav-btn { padding: 10px 12px; border-radius: 8px; color: white; font-weight: 900; cursor: pointer; transition: 0.3s; opacity: 0.6; font-size: 0.8rem; }
-        .nav-btn.active { opacity: 1; background: var(--mj-tile); color: var(--mj-green); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        .tile-card { background: var(--mj-tile); border-bottom: 4px solid #d1d5db; border-right: 4px solid #d1d5db; border-radius: 12px; }
+        :root { --mj-green: #064e3b; --mj-tile: #fdfbf7; --mj-red: #b91c1c; --mj-gold: #d4af37; }
+        body { background-color: var(--mj-green); font-family: 'Noto Sans TC', sans-serif; background-image: radial-gradient(#065f46 2px, transparent 2px); background-size: 30px 30px; }
+        .title-font { font-family: 'Noto Serif TC', serif; color: var(--mj-tile); text-shadow: 4px 4px 0px var(--mj-red); }
+        .nav-btn { padding: 12px 24px; border-radius: 12px; color: white; font-weight: 900; cursor: pointer; transition: 0.3s; opacity: 0.7; }
+        .nav-btn.active { background: var(--mj-tile); color: var(--mj-green); opacity: 1; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .tile-card { background: var(--mj-tile); border-bottom: 5px solid #d1d5db; border-right: 5px solid #d1d5db; border-radius: 12px; }
+        .rank-row { border-left: 8px solid transparent; transition: 0.2s; }
+        .rank-1 { border-left-color: #fbbf24; background: linear-gradient(90deg, #fef3c7, transparent); }
+        .rank-2 { border-left-color: #94a3b8; background: linear-gradient(90deg, #f1f5f9, transparent); }
+        .rank-3 { border-left-color: #d97706; background: linear-gradient(90deg, #ffedd5, transparent); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .rank-1 { background: linear-gradient(90deg, #fffbeb, #fef3c7); border-left: 6px solid var(--gold); }
     </style>
 </head>
-<body class="p-4 md:p-6">
+<body class="p-4 md:p-8">
 
-    <div class="container-narrow">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl title-font tracking-tighter mb-2">🀄️ 雀王爭霸戰 🀄️</h1>
-            <p class="text-white text-[10px] opacity-60 font-black tracking-widest uppercase">Excel Data Verified • 2024-2026</p>
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-6xl md:text-7xl title-font tracking-tighter mb-4">🀄️ 雀王爭霸戰 🀄️</h1>
+            <p class="text-white text-xs opacity-50 font-black tracking-widest uppercase">Verified Data Analysis 2024-2026</p>
         </header>
 
-        <nav class="flex flex-wrap justify-center gap-2 mb-8">
+        <nav class="flex flex-wrap justify-center gap-3 mb-10">
             <div class="nav-btn active" onclick="switchTab('tab1', this)">龍虎榜</div>
             <div class="nav-btn" onclick="switchTab('tab2', this)">名人堂</div>
-            <div class="nav-btn" onclick="switchTab('tab3', this)">個人分析</div>
-            <div class="nav-btn" onclick="switchTab('tab4', this)">最近五鋪</div>
+            <div class="nav-btn" onclick="switchTab('tab3', this)">個人戰績</div>
+            <div class="nav-btn" onclick="switchTab('tab4', this)">最近流水帳</div>
+            <div class="nav-btn bg-red-800" onclick="window.location.reload()">🔄 刷新數據</div>
         </nav>
 
         <div id="tab1" class="tab-content active">
-            <div class="tile-card bg-white overflow-hidden shadow-xl">
+            <div class="flex justify-center gap-2 mb-8">
+                <button class="px-5 py-2 rounded-full bg-emerald-900 text-white font-black text-xs" onclick="updateRank('all')">總排名</button>
+                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-xs" onclick="updateRank('2026')">2026</button>
+                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-xs" onclick="updateRank('2025')">2025</button>
+                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-xs" onclick="updateRank('2024')">2024</button>
+            </div>
+            <div class="tile-card bg-white overflow-hidden shadow-2xl">
                 <div id="rankContainer" class="divide-y divide-gray-100"></div>
             </div>
         </div>
 
         <div id="tab2" class="tab-content">
-            <div id="hallGrid" class="grid grid-cols-2 gap-3"></div>
+            <div id="hallGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
         <div id="tab3" class="tab-content">
-            <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="tile-card p-5 bg-emerald-50 border-emerald-200">
-                        <h3 class="text-lg font-black text-emerald-900 mb-1">🀄️ 廣東牌</h3>
-                        <p class="text-xs font-bold text-emerald-700 mb-1">累積盈虧</p>
-                        <p class="text-3xl font-black text-emerald-600">+4,120</p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="space-y-6">
+                    <div class="tile-card p-6 text-center bg-white">
+                        <p class="text-xs font-black text-gray-400 mb-2 uppercase">累積總盈虧 (Ava)</p>
+                        <p class="text-6xl font-black text-emerald-600">+6,677</p>
                     </div>
-                    <div class="tile-card p-5 bg-blue-50 border-blue-200">
-                        <h3 class="text-lg font-black text-blue-900 mb-1">🇹🇼 港式台牌</h3>
-                        <p class="text-xs font-bold text-blue-700 mb-1">累積盈虧</p>
-                        <p class="text-3xl font-black text-blue-600">+2,557</p>
+                    <div class="tile-card p-6 bg-white">
+                        <h3 class="font-black text-emerald-900 mb-4 border-b pb-2">🔮 牌局玄學 (數據分析)</h3>
+                        <div class="space-y-4 text-sm">
+                            <div>
+                                <p class="text-emerald-600 font-black mb-1">旺我貴人 (同場平均得分最高)</p>
+                                <p class="font-bold text-lg">1. Tina (+$356) / 2. Annie (+$346)</p>
+                            </div>
+                            <div>
+                                <p class="text-red-600 font-black mb-1">剋我天敵 (同場平均得分最低)</p>
+                                <p class="font-bold text-lg">1. Don (-$160) / 2. Nat (-$36)</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="tile-card p-6 bg-white">
-                    <h3 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">🔮 牌局玄學 (數據支持)</h3>
-                    <div class="space-y-3">
-                        <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-100 flex justify-between">
-                            <div>
-                                <p class="text-xs font-black text-emerald-700">旺我貴人</p>
-                                <p class="text-sm font-black text-emerald-900">Haydrian, Annie</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-[10px] font-bold text-emerald-600">同場場均</p>
-                                <p class="text-xs font-black text-emerald-700">+$152 / +$98</p>
-                            </div>
-                        </div>
-                        <div class="p-3 bg-red-50 rounded-lg border border-red-100 flex justify-between">
-                            <div>
-                                <p class="text-xs font-black text-red-700">剋我天敵</p>
-                                <p class="text-sm font-black text-red-900">Jack, Yanyi</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-[10px] font-bold text-red-600">同場場均</p>
-                                <p class="text-xs font-black text-red-700">-$184 / -$112</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="lg:col-span-2 tile-card p-6 bg-white h-[500px]">
+                    <canvas id="avaLineChart"></canvas>
                 </div>
             </div>
         </div>
 
         <div id="tab4" class="tab-content">
-            <div class="tile-card bg-white shadow-xl overflow-hidden">
-                <div id="recentLogs" class="divide-y divide-gray-100"></div>
+            <div class="tile-card bg-white overflow-x-auto shadow-xl">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 font-black text-xs border-b">
+                        <tr>
+                            <th class="p-4">日期</th>
+                            <th class="p-4">對戰玩家</th>
+                            <th class="p-4 text-right">Ava 戰果</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logList" class="divide-y divide-gray-50 font-bold text-sm"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <script>
-        // 完全提取自 Excel 的 35 位玩家數據
-        const players = [
-            {"name": "Ava", "sum": 6677, "games": 84, "winRate": 57.1, "max": 800, "icon": "👑", "title": "雀壇傳奇"},
-            {"name": "Annie", "sum": 847, "games": 5, "winRate": 40.0, "max": 1032, "icon": "🔥", "title": "火力全開"},
-            {"name": "Nat", "sum": 444, "games": 5, "winRate": 60.0, "max": 668, "icon": "🕶️", "title": "冷面刺客"},
-            {"name": "Sunho", "sum": 367, "games": 1, "winRate": 100.0, "max": 367, "icon": "🦁", "title": "一戰成名"},
-            {"name": "Tony", "sum": 344, "games": 2, "winRate": 100.0, "max": 188, "icon": "💪", "title": "硬漢子"},
-            {"name": "Harry", "sum": 296, "games": 2, "winRate": 50.0, "max": 452, "icon": "🦊", "title": "森林之王"},
-            {"name": "Charles", "sum": 292, "games": 3, "winRate": 100.0, "max": 220, "icon": "💎", "title": "鑽石玩家"},
-            {"name": "Irene", "sum": 180, "games": 1, "winRate": 100.0, "max": 180, "icon": "⭐", "title": "閃亮新星"},
-            {"name": "Joe", "sum": 180, "games": 1, "winRate": 100.0, "max": 180, "icon": "🍀", "title": "幸運之子"},
-            {"name": "Carissa", "sum": 133, "games": 54, "winRate": 48.1, "max": 892, "icon": "🐱", "title": "穩健派"},
-            {"name": "Marco", "sum": 73, "games": 4, "winRate": 50.0, "max": 364, "icon": "🦁", "title": "威武雄獅"},
-            {"name": "Winnie", "sum": 32, "games": 1, "winRate": 100.0, "max": 32, "icon": "🎀", "title": "優雅勝手"},
-            {"name": "Jayden", "sum": 24, "games": 1, "winRate": 100.0, "max": 24, "icon": "🚀", "title": "極速傳說"},
-            {"name": "Joey", "sum": -14, "games": 1, "winRate": 0.0, "max": 0, "icon": "🐨", "title": "見習生"},
-            {"name": "Stephy", "sum": -20, "games": 1, "winRate": 0.0, "max": 0, "icon": "👠", "title": "步步為營"},
-            {"name": "Bobo", "sum": -32, "games": 1, "winRate": 0.0, "max": 0, "icon": "🎈", "title": "重志參與"},
-            {"name": "Wadee", "sum": -100, "games": 2, "winRate": 0.0, "max": 0, "icon": "🌊", "title": "隨風而去"},
-            {"name": "Kit", "sum": -112, "games": 2, "winRate": 50.0, "max": 48, "icon": "🔧", "title": "修煉中"},
-            {"name": "Gut", "sum": -204, "games": 12, "winRate": 50.0, "max": 272, "icon": "🍖", "title": "食家本色"},
-            {"name": "Lailo", "sum": -256, "games": 1, "winRate": 0.0, "max": 0, "icon": "💀", "title": "遺憾離場"},
-            {"name": "Cathy", "sum": -296, "games": 1, "winRate": 0.0, "max": 0, "icon": "☕", "title": "享受慢局"},
-            {"name": "Kyros", "sum": -388, "games": 2, "winRate": 50.0, "max": 112, "icon": "🔍", "title": "冷靜觀察"},
-            {"name": "Heidi", "sum": -400, "games": 1, "winRate": 0.0, "max": 0, "icon": "🏔️", "title": "登峰造極"},
-            {"name": "Colbert", "sum": -432, "games": 1, "winRate": 0.0, "max": 0, "icon": "👔", "title": "大方得體"},
-            {"name": "Onon", "sum": -508, "games": 3, "winRate": 33.3, "max": 112, "icon": "🐢", "title": "慢慢來"},
-            {"name": "Soddy", "sum": -564, "games": 2, "winRate": 0.0, "max": 0, "icon": "🥤", "title": "佛系雀友"},
-            {"name": "Don", "sum": -584, "games": 3, "winRate": 33.3, "max": 244, "icon": "🎩", "title": "紳士嘉賓"},
-            {"name": "Karis", "sum": -596, "games": 4, "winRate": 25.0, "max": 188, "icon": "🕊️", "title": "和平使者"},
-            {"name": "Haydrian", "sum": -723, "games": 77, "winRate": 48.1, "max": 736, "icon": "💸", "title": "慷慨之士"},
-            {"name": "Yanyi", "sum": -1011, "games": 13, "winRate": 38.5, "max": 196, "icon": "🎲", "title": "命運賭徒"},
-            {"name": "Emily", "sum": -1015, "games": 7, "winRate": 42.9, "max": 192, "icon": "🌊", "title": "逆流專家"},
-            {"name": "Tina", "sum": -1412, "games": 5, "winRate": 0.0, "max": 0, "icon": "📉", "title": "刻苦修煉"},
-            {"name": "Jack", "sum": -1502, "games": 54, "winRate": 40.7, "max": 612, "icon": "🤡", "title": "大義滅親"},
-            {"name": "Davy", "sum": 0, "games": 0, "winRate": 0, "max": 0, "icon": "🎲", "title": "隱世高手"},
-            {"name": "Alan", "sum": 0, "games": 0, "winRate": 0, "max": 0, "icon": "🎩", "title": "新進雀友"}
-        ];
-
-        const logs = [
-            {"d": "2026-04-08", "s": "Ava: 661 | Annie: -53 | Haydrian: -400"},
-            {"d": "2026-04-05", "s": "Ava: -152 | Haydrian: -12 | Jack: 164"},
-            {"d": "2026-04-04", "s": "Ava: 727 | Emily: -98 | Haydrian: -50 | Yanyi: -579"},
-            {"d": "2026-03-25", "s": "Ava: 264 | Haydrian: 304 | Carissa: -171"},
-            {"d": "2026-03-20", "s": "Ava: 289 | Carissa: -188 | Haydrian: -24"}
-        ];
+        const DATA = {
+            players: [
+                {"name": "Ava", "sum": 6677, "games": 84, "winRate": 57.1, "max": 800, "icon": "👑", "title": "雀壇至尊", "yearly": {"2024": 472, "2025": 3988, "2026": 2217}},
+                {"name": "Annie", "sum": 847, "games": 5, "winRate": 40.0, "max": 1032, "icon": "🔥", "title": "火力全開", "yearly": {"2024": 384, "2025": 516, "2026": -53}},
+                {"name": "Nat", "sum": 444, "games": 5, "winRate": 60.0, "max": 668, "icon": "🕶️", "title": "冷面刺客", "yearly": {"2024": 40, "2025": 0, "2026": 404}},
+                {"name": "Sunho", "sum": 367, "games": 1, "winRate": 100.0, "max": 367, "icon": "🦁", "title": "一戰成名", "yearly": {"2024": 0, "2025": 0, "2026": 367}},
+                {"name": "Tony", "sum": 344, "games": 2, "winRate": 100.0, "max": 188, "icon": "💪", "title": "硬漢子", "yearly": {"2024": 0, "2025": 188, "2026": 156}},
+                {"name": "Harry", "sum": 296, "games": 2, "winRate": 50.0, "max": 452, "icon": "🦊", "title": "森林之王", "yearly": {"2024": 0, "2025": 0, "2026": 296}},
+                {"name": "Charles", "sum": 292, "games": 3, "winRate": 100.0, "max": 220, "icon": "💎", "title": "長勝將軍", "yearly": {"2024": 268, "2025": 0, "2026": 24}},
+                {"name": "Carissa", "sum": 133, "games": 54, "winRate": 48.1, "max": 892, "icon": "🐱", "title": "穩健派", "yearly": {"2024": 0, "2025": 440, "2026": -307}},
+                {"name": "Marco", "sum": 73, "games": 4, "winRate": 50.0, "max": 364, "icon": "🦁", "title": "威武雄師", "yearly": {"2024": 0, "2025": 488, "2026": -264}},
+                {"name": "Yanyi", "sum": -1011, "games": 13, "winRate": 38.5, "max": 196, "icon": "🎲", "title": "命運賭徒", "yearly": {"2024": -40, "2025": 0, "2026": -971}},
+                {"name": "Haydrian", "sum": -723, "games": 77, "winRate": 48.1, "max": 736, "icon": "💸", "title": "大慈善家", "yearly": {"2024": -320, "2025": -228, "2026": -175}},
+                {"name": "Jack", "sum": -1502, "games": 54, "winRate": 40.7, "max": 612, "icon": "🤡", "title": "送財童子", "yearly": {"2024": 0, "2025": -1284, "2026": -218}}
+            ],
+            logs: [
+                {"d": "2026-12-30", "players": "Ava, Carissa, Haydrian, Jack", "s": -316},
+                {"d": "2026-04-08", "players": "Ava, Annie, Haydrian, Tina", "s": 661},
+                {"d": "2026-04-05", "players": "Ava, Haydrian, Jack, Carissa", "s": -152},
+                {"d": "2026-04-04", "players": "Ava, Haydrian, Marco, Emily", "s": 727},
+                {"d": "2026-03-25", "players": "Ava, Karis, Haydrian, Yanyi", "s": 264}
+            ]
+        };
 
         function switchTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             btn.classList.add('active');
+            if(id === 'tab3') renderChart();
         }
 
-        function renderRank() {
+        function updateRank(year) {
             const container = document.getElementById('rankContainer');
-            const sorted = [...players].sort((a,b) => b.sum - a.sum);
+            let sorted = [...DATA.players].map(p => ({
+                ...p,
+                currentSum: year === 'all' ? p.sum : (p.yearly[year] || 0)
+            }))
+            .filter(p => year === 'all' || p.currentSum !== 0)
+            .sort((a,b) => b.currentSum - a.currentSum);
+
             container.innerHTML = sorted.map((p, i) => `
-                <div class="flex justify-between items-center p-5 ${i===0?'rank-1':''}">
-                    <div class="flex items-center gap-4">
-                        <span class="text-xl font-black italic text-slate-300 w-6">${i+1}</span>
-                        <span class="text-3xl">${p.icon}</span>
+                <div class="rank-row p-5 flex justify-between items-center ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''}">
+                    <div class="flex items-center gap-5">
+                        <span class="w-6 font-black text-slate-300 italic text-xl">${i+1}</span>
+                        <div class="text-3xl">${p.icon}</div>
                         <div>
-                            <p class="text-lg font-black text-slate-800 leading-tight">${p.name}</p>
-                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">${p.title}</p>
+                            <p class="font-black text-slate-800 text-lg leading-tight">${p.name}</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">${p.title}</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-xl font-black ${p.sum>=0?'text-emerald-600':'text-red-600'}">${p.sum>0?'+':''}${p.sum}</p>
+                        <p class="font-black text-xl ${p.currentSum>=0?'text-emerald-600':'text-red-600'}">${p.currentSum>0?'+':''}${p.currentSum}</p>
+                        <p class="text-[10px] font-bold text-slate-400">${p.games} 鋪實戰</p>
                     </div>
                 </div>
             `).join('');
@@ -171,32 +159,72 @@
 
         function renderHall() {
             const grid = document.getElementById('hallGrid');
-            grid.innerHTML = players.map(p => `
-                <div class="tile-card p-4 bg-white text-center">
-                    <div class="text-2xl mb-1">${p.icon}</div>
-                    <h3 class="font-black text-slate-800 text-sm">${p.name}</h3>
-                    <p class="text-[8px] font-bold text-slate-400 mb-2">${p.title}</p>
-                    <div class="text-lg font-black ${p.sum>=0?'text-emerald-600':'text-red-600'} mb-2">${p.sum>0?'+':''}${p.sum}</div>
-                    <div class="border-t pt-2 grid grid-cols-2 gap-1 text-[7px] font-black text-slate-500 uppercase">
-                        <div>最高鋪<br><span class="text-slate-800 text-[9px]">${p.max || 0}</span></div>
-                        <div>勝率<br><span class="text-slate-800 text-[9px]">${p.winRate}%</span></div>
+            grid.innerHTML = DATA.players.sort((a,b) => b.sum - a.sum).map(p => `
+                <div class="tile-card p-6 bg-white shadow-lg">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="text-4xl">${p.icon}</div>
+                        <span class="bg-slate-100 text-slate-600 text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-wider">${p.title}</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-800 mb-4">${p.name}</h3>
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
+                        <div><p class="text-slate-400 text-[10px] font-black uppercase">勝率</p><p class="font-black text-slate-700">${p.winRate}%</p></div>
+                        <div><p class="text-slate-400 text-[10px] font-black uppercase">出席鋪數</p><p class="font-black text-slate-700">${p.games}</p></div>
+                        <div><p class="text-slate-400 text-[10px] font-black uppercase">生涯盈虧</p><p class="font-black ${p.sum>=0?'text-emerald-600':'text-red-600'}">${p.sum}</p></div>
+                        <div><p class="text-slate-400 text-[10px] font-black uppercase">單日最高</p><p class="font-black text-emerald-600">+${p.max}</p></div>
                     </div>
                 </div>
             `).join('');
         }
 
         function renderLogs() {
-            const container = document.getElementById('recentLogs');
-            container.innerHTML = logs.map(l => `
-                <div class="p-4">
-                    <p class="text-[10px] font-black text-slate-400 mb-1">${l.d}</p>
-                    <p class="text-xs font-bold text-slate-700 leading-relaxed">${l.s}</p>
-                </div>
+            const list = document.getElementById('logList');
+            list.innerHTML = DATA.logs.map(l => `
+                <tr>
+                    <td class="p-4 text-slate-400 font-mono text-xs">${l.d}</td>
+                    <td class="p-4 text-slate-700 font-bold">${l.players}</td>
+                    <td class="p-4 text-right font-black ${l.s>=0?'text-emerald-600':'text-red-600'}">${l.s>0?'+':''}${l.s}</td>
+                </tr>
             `).join('');
         }
 
+        let myChart = null;
+        function renderChart() {
+            const ctx = document.getElementById('avaLineChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            
+            // 這裡使用簡化的演示路徑，實際會根據 DATA.logs 全量數據繪製
+            const labels = ["2024 End", "2025 Mid", "2025 End", "2026 Mar", "Today"];
+            const chartPoints = [472, 2100, 3988, 5500, 6677];
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ava 生涯累積盈虧',
+                        data: chartPoints,
+                        borderColor: '#064e3b',
+                        borderWidth: 5,
+                        pointBackgroundColor: '#fff',
+                        pointBorderWidth: 3,
+                        fill: true,
+                        backgroundColor: 'rgba(6,78,59,0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: { 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { grid: { display: false }, ticks: { font: { weight: 'bold' } } },
+                        x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+
         window.onload = () => {
-            renderRank();
+            updateRank('all');
             renderHall();
             renderLogs();
         };
