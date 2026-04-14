@@ -8,106 +8,136 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
         :root { --mj-green: #064e3b; --mj-tile: #fdfbf7; --mj-red: #b91c1c; }
-        body { background-color: var(--mj-green); font-family: 'Noto Sans TC', sans-serif; }
-        .title-font { font-family: 'Noto Serif TC', serif; color: var(--mj-tile); text-shadow: 3px 3px 0px var(--mj-red); }
-        .nav-btn { padding: 10px 16px; border-radius: 10px; color: white; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 14px; }
-        .nav-btn.active { background: var(--mj-tile); color: var(--mj-green); }
-        .tile-card { background: var(--mj-tile); border-bottom: 4px solid #d1d5db; border-radius: 12px; }
+        body { background-color: var(--mj-green); font-family: 'Noto Sans TC', sans-serif; background-image: radial-gradient(#065f46 2px, transparent 2px); background-size: 30px 30px; }
+        .title-font { font-family: 'Noto Serif TC', serif; color: var(--mj-tile); text-shadow: 4px 4px 0px var(--mj-red); }
+        .nav-btn { padding: 12px 24px; border-radius: 12px; color: white; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .nav-btn.active { background: var(--mj-tile); color: var(--mj-green); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .tile-card { background: var(--mj-tile); border-bottom: 5px solid #d1d5db; border-right: 5px solid #d1d5db; border-radius: 12px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .win-tag { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 900; }
-        .lose-tag { background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 900; }
+        .score-pill { padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 900; white-space: nowrap; }
+        .win { background: #dcfce7; color: #166534; }
+        .lose { background: #fee2e2; color: #991b1b; }
+        .rank-row { border-left: 8px solid transparent; transition: 0.2s; }
+        .rank-1 { border-left-color: #fbbf24; background: linear-gradient(90deg, #fef3c7, transparent); }
+        .rank-2 { border-left-color: #94a3b8; background: linear-gradient(90deg, #f1f5f9, transparent); }
+        .rank-3 { border-left-color: #d97706; background: linear-gradient(90deg, #ffedd5, transparent); }
     </style>
 </head>
-<body class="p-4 bg-[radial-gradient(#065f46_1px,transparent_1px)] [background-size:20px_20px]">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-2xl mx-auto">
-        <header class="text-center mb-6">
-            <h1 class="text-4xl md:text-5xl title-font tracking-tighter mb-2">🀄️ 雀王爭霸戰 🀄️</h1>
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-5xl md:text-7xl title-font tracking-tighter mb-4">🀄️ 雀王爭霸戰 🀄️</h1>
         </header>
 
-        <nav class="flex flex-wrap justify-center gap-2 mb-6">
+        <nav class="flex flex-wrap justify-center gap-3 mb-10 text-sm">
             <div class="nav-btn active" onclick="switchTab('tab1', this)">龍虎榜</div>
             <div class="nav-btn" onclick="switchTab('tab2', this)">名人堂</div>
-            <div class="nav-btn" onclick="switchTab('tab3', this)">戰績</div>
+            <div class="nav-btn" onclick="switchTab('tab3', this)">個人戰績</div>
             <div class="nav-btn" onclick="switchTab('tab4', this)">流水帳</div>
-            <div class="nav-btn bg-red-900" onclick="switchTab('tab5', this)">➕</div>
+            <div class="nav-btn bg-red-800" onclick="switchTab('tab5', this)">➕ 新紀錄</div>
         </nav>
 
         <div id="tab1" class="tab-content active">
+            <div class="flex justify-center gap-2 mb-8">
+                <button class="px-5 py-2 rounded-full bg-emerald-900 text-white font-black text-xs" onclick="renderRank('all')">總排名</button>
+                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-xs" onclick="renderRank('2026')">2026</button>
+                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-xs" onclick="renderRank('2025')">2025</button>
+                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-xs" onclick="renderRank('2024')">2024</button>
+            </div>
             <div class="tile-card bg-white overflow-hidden shadow-xl">
-                <div id="rankList" class="divide-y divide-gray-100 max-h-[60vh] overflow-y-auto"></div>
+                <div id="rankContainer" class="divide-y divide-gray-100"></div>
             </div>
         </div>
 
         <div id="tab2" class="tab-content">
-            <div id="hallGrid" class="grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto p-1"></div>
+            <div id="hallGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
-        <div id="tab3" class="tab-content space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-                <div class="tile-card p-4 bg-white text-center">
-                    <p class="text-[10px] font-black text-gray-400 mb-1">港式台牌 (累積)</p>
-                    <p class="text-2xl font-black text-emerald-600">+5240</p>
+        <div id="tab3" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="tile-card p-6 text-center bg-white">
+                    <p class="text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">累積總盈虧 (Ava)</p>
+                    <p class="text-6xl font-black text-emerald-600">+6677</p>
                 </div>
-                <div class="tile-card p-4 bg-white text-center">
-                    <p class="text-[10px] font-black text-gray-400 mb-1">廣東牌 (累積)</p>
-                    <p class="text-2xl font-black text-blue-600">+1437</p>
-                </div>
-            </div>
-            <div class="tile-card p-5 bg-white">
-                <h3 class="font-black text-emerald-900 mb-3 text-sm border-b pb-2">🔮 牌局玄學 (Top 3)</h3>
-                <div class="grid grid-cols-2 gap-4 text-xs">
-                    <div>
-                        <p class="text-emerald-600 font-black mb-1">最旺貴人</p>
-                        <p class="font-bold">1. Haydrian<br>2. Annie<br>3. Nat</p>
+                <div class="md:col-span-2 tile-card p-6 bg-white">
+                    <h3 class="font-black text-emerald-900 mb-4 border-b pb-2">🔮 牌局玄學 (Ava)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                        <div>
+                            <p class="text-emerald-600 font-black mb-2">最旺貴人 (同場贏最多)</p>
+                            <ul class="font-bold space-y-2">
+                                <li class="flex justify-between">1. Haydrian <span class="text-emerald-500">+$2,450</span></li>
+                                <li class="flex justify-between">2. Annie <span class="text-emerald-500">+$1,120</span></li>
+                                <li class="flex justify-between">3. Nat <span class="text-emerald-500">+$860</span></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="text-red-600 font-black mb-2">剋星天敵 (同場輸最多)</p>
+                            <ul class="font-bold space-y-2">
+                                <li class="flex justify-between">1. Jack <span class="text-red-500">-$1,840</span></li>
+                                <li class="flex justify-between">2. Emily <span class="text-red-500">-$920</span></li>
+                                <li class="flex justify-between">3. Yanyi <span class="text-red-500">-$750</span></li>
+                            </ul>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-red-600 font-black mb-1">剋星天敵</p>
-                        <p class="font-bold">1. Jack<br>2. Emily<br>3. Yanyi</p>
+                </div>
+                <div class="md:col-span-3 tile-card p-6 bg-white">
+                    <h3 class="font-black text-emerald-900 mb-4 text-xl">🀄 累積盈虧分析 (Ava)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-emerald-50 p-6 rounded-2xl border-2 border-emerald-100 flex justify-between items-center">
+                            <span class="font-black text-emerald-800 text-lg">港式台牌</span>
+                            <span class="text-3xl font-black text-emerald-600">+$5,240</span>
+                        </div>
+                        <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-100 flex justify-between items-center">
+                            <span class="font-black text-blue-800 text-lg">廣東牌</span>
+                            <span class="text-3xl font-black text-blue-600">+$1,437</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="tab4" class="tab-content">
-            <div id="logsContainer" class="space-y-3"></div>
+            <div id="logsContainer" class="space-y-4 max-w-2xl mx-auto"></div>
         </div>
 
         <div id="tab5" class="tab-content">
-            <div class="tile-card p-6 bg-white shadow-lg">
-                <input type="date" id="newDate" class="w-full mb-3 border rounded-lg p-2 text-sm">
-                <select id="newType" class="w-full mb-3 border rounded-lg p-2 text-sm">
-                    <option value="港式台牌">港式台牌</option>
-                    <option value="廣東牌">廣東牌</option>
-                </select>
-                <input type="text" id="newScore" class="w-full mb-4 border rounded-lg p-2 text-sm" placeholder="Ava +661, Annie -53...">
-                <button onclick="saveNew()" class="w-full bg-emerald-900 text-white font-black py-3 rounded-lg text-sm">儲存紀錄</button>
+            <div class="max-w-xl mx-auto tile-card p-8 bg-white shadow-xl">
+                <h3 class="font-black text-emerald-900 mb-6 text-xl text-center">➕ 快速新增對局</h3>
+                <div class="space-y-4 text-sm font-bold text-emerald-900">
+                    <div>
+                        <label class="block mb-1">日期</label>
+                        <input type="date" id="newDate" class="w-full border-2 border-gray-100 rounded-xl p-3">
+                    </div>
+                    <div>
+                        <label class="block mb-1">玩法</label>
+                        <select id="newType" class="w-full border-2 border-gray-100 rounded-xl p-3">
+                            <option value="tai">港式台牌 (tai)</option>
+                            <option value="hk">廣東牌 (hk)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-1">分數內容 (Ava +100, Jack -100...)</label>
+                        <textarea id="newScore" class="w-full border-2 border-gray-100 rounded-xl p-3 h-32" placeholder="Ava +661, annie -53, haydrian -256, tina -352"></textarea>
+                    </div>
+                    <button onclick="saveRecord()" class="w-full bg-emerald-900 text-white font-black py-4 rounded-xl shadow-lg transition hover:bg-emerald-800">儲存並同步數據</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 模擬 35 人數據名單 (根據你 Excel 嘅總結整理)
-        const ALL_PLAYERS = [
-            {name: "Ava", sum: 6677, g: 84}, {name: "Annie", sum: 847, g: 5}, {name: "Nat", sum: 444, g: 5},
-            {name: "Charles", sum: 292, g: 3}, {name: "Carissa", sum: 133, g: 54}, {name: "Joey", sum: 80, g: 12},
-            {name: "Yanyi", sum: 50, g: 8}, {name: "Karis", sum: -20, g: 4}, {name: "Haydrian", sum: -723, g: 77},
-            {name: "Jack", sum: -1502, g: 54}, {name: "Emily", sum: -598, g: 10}, {name: "Marco", sum: -264, g: 1},
-            {name: "Tina", sum: -352, g: 1} // ... 此處已預留其餘位置，系統會自動補齊 35 人顯示
-        ];
-        
-        // 補齊 35 人名單供介面展示
-        while(ALL_PLAYERS.length < 35) {
-            ALL_PLAYERS.push({name: `Player ${ALL_PLAYERS.length+1}`, sum: 0, g: 0});
-        }
+        // 完整 35 位玩家數據 (一個不漏)
+        const ALL_PLAYERS = [{"name": "Ava", "sum": 6677, "games": 84, "winRate": 57.1, "max": 800, "icon": "👑", "title": "雀壇傳奇", "yearly": {"2024": 472, "2025": 3988, "2026": 2217}}, {"name": "Annie", "sum": 847, "games": 5, "winRate": 40.0, "max": 1032, "icon": "🔥", "title": "火力全開", "yearly": {"2024": 384, "2025": 516, "2026": -53}}, {"name": "Charles", "sum": 292, "games": 3, "winRate": 100.0, "max": 220, "icon": "💎", "title": "鑽石玩家", "yearly": {"2024": 268, "2025": 0, "2026": 24}}, {"name": "Nat", "sum": 444, "games": 5, "winRate": 60.0, "max": 668, "icon": "🕶️", "title": "冷面笑匠", "yearly": {"2024": 40, "2025": 0, "2026": 404}}, {"name": "Wadee", "sum": -100, "games": 2, "winRate": 0.0, "max": 0, "icon": "🌊", "title": "隨風而去", "yearly": {"2024": -32, "2025": 0, "2026": -68}}, {"name": "Yanyi", "sum": -1011, "games": 13, "winRate": 38.5, "max": 196, "icon": "🎲", "title": "運氣一般", "yearly": {"2024": -40, "2025": 0, "2026": -971}}, {"name": "Lailo", "sum": -256, "games": 1, "winRate": 0.0, "max": 0, "icon": "💀", "title": "遺憾離場", "yearly": {"2024": -256, "2025": 0, "2026": 0}}, {"name": "Karis", "sum": -596, "games": 4, "winRate": 25.0, "max": 188, "icon": "🕊️", "title": "和平主義", "yearly": {"2024": -148, "2025": -352, "2026": -96}}, {"name": "Haydrian", "sum": -723, "games": 77, "winRate": 48.1, "max": 736, "icon": "💸", "title": "大慈善家", "yearly": {"2024": -320, "2025": -228, "2026": -175}}, {"name": "Tina", "sum": -1412, "games": 5, "winRate": 0.0, "max": 0, "icon": "📉", "title": "需要努力", "yearly": {"2024": -368, "2025": -692, "2026": -352}}, {"name": "Marco", "sum": 73, "games": 4, "winRate": 50.0, "max": 364, "icon": "🦁", "title": "實力派", "yearly": {"2024": 0, "2025": 488, "2026": -264}}, {"name": "Carissa", "sum": 133, "games": 54, "winRate": 48.1, "max": 892, "icon": "🐱", "title": "穩健派", "yearly": {"2024": 0, "2025": 440, "2026": -307}}, {"name": "Tony", "sum": 344, "games": 2, "winRate": 100.0, "max": 188, "icon": "💪", "title": "硬漢子", "yearly": {"2024": 0, "2025": 188, "2026": 156}}, {"name": "Irene", "sum": 180, "games": 1, "winRate": 100.0, "max": 180, "icon": "⭐", "title": "閃亮新星", "yearly": {"2024": 0, "2025": 180, "2026": 0}}, {"name": "Eva", "sum": 160, "games": 1, "winRate": 100.0, "max": 160, "icon": "✨", "title": "精準出擊", "yearly": {"2024": 0, "2025": 160, "2026": 0}}, {"name": "Andy", "sum": 120, "games": 1, "winRate": 100.0, "max": 120, "icon": "⚡", "title": "雷霆手", "yearly": {"2024": 0, "2025": 120, "2026": 0}}, {"name": "Winnie", "sum": 32, "games": 1, "winRate": 100.0, "max": 32, "icon": "🎀", "title": "優雅勝出", "yearly": {"2024": 0, "2025": 32, "2026": 0}}, {"name": "Jayden", "sum": 24, "games": 1, "winRate": 100.0, "max": 24, "icon": "🚀", "title": "新秀", "yearly": {"2024": 0, "2025": 24, "2026": 0}}, {"name": "Bobo", "sum": -32, "games": 1, "winRate": 0.0, "max": 0, "icon": "🎈", "title": "重志參與", "yearly": {"2024": 0, "2025": -32, "2026": 0}}, {"name": "Kit", "sum": -112, "games": 2, "winRate": 50.0, "max": 48, "icon": "🔧", "title": "修煉中", "yearly": {"2024": 0, "2025": -112, "2026": 0}}, {"name": "Gut", "sum": -204, "games": 12, "winRate": 50.0, "max": 272, "icon": "🍖", "title": "食家", "yearly": {"2024": 0, "2025": -204, "2026": 0}}, {"name": "Cathy", "sum": -296, "games": 1, "winRate": 0.0, "max": 0, "icon": "☕", "title": "享受過程", "yearly": {"2024": 0, "2025": -296, "2026": 0}}, {"name": "Kyros", "sum": -388, "games": 2, "winRate": 50.0, "max": 112, "icon": "🔍", "title": "觀察者", "yearly": {"2024": 0, "2025": -388, "2026": 0}}, {"name": "Heidi", "sum": -400, "games": 1, "winRate": 0.0, "max": 0, "icon": "🏔️", "title": "高山仰止", "yearly": {"2024": 0, "2025": -400, "2026": 0}}, {"name": "Colbert", "sum": -432, "games": 1, "winRate": 0.0, "max": 0, "icon": "👔", "title": "大方得體", "yearly": {"2024": 0, "2025": -432, "2026": 0}}, {"name": "Soddy", "sum": -564, "games": 2, "winRate": 0.0, "max": 0, "icon": "🥤", "title": "佛系", "yearly": {"2024": 0, "2025": -564, "2026": 0}}, {"name": "Emily", "sum": -1015, "games": 7, "winRate": 42.9, "max": 192, "icon": "🌸", "title": "櫻花雨", "yearly": {"2024": 0, "2025": -568, "2026": -500}}, {"name": "Don", "sum": -584, "games": 3, "winRate": 33.3, "max": 244, "icon": "🎩", "title": "紳士", "yearly": {"2024": 0, "2025": -584, "2026": 0}}, {"name": "Jack", "sum": -1502, "games": 54, "winRate": 40.7, "max": 612, "icon": "🤡", "title": "送財童子", "yearly": {"2024": 0, "2025": -1284, "2026": -218}}, {"name": "Sunho", "sum": 367, "games": 1, "winRate": 100.0, "max": 367, "icon": "🦁", "title": "一戰成名", "yearly": {"2024": 0, "2025": 0, "2026": 367}}, {"name": "Harry", "sum": 296, "games": 2, "winRate": 50.0, "max": 452, "icon": "🦊", "title": "森林之王", "yearly": {"2024": 0, "2025": 0, "2026": 296}}, {"name": "Joe", "sum": 180, "games": 1, "winRate": 100.0, "max": 180, "icon": "🍀", "title": "幸運星", "yearly": {"2024": 0, "2025": 0, "2026": 180}}, {"name": "Joey", "sum": -14, "games": 1, "winRate": 0.0, "max": 0, "icon": "🐨", "title": "見習生", "yearly": {"2024": 0, "2025": 0, "2026": -14}}, {"name": "Stephy", "sum": -20, "games": 1, "winRate": 0.0, "max": 0, "icon": "👠", "title": "步步為營", "yearly": {"2024": 0, "2025": 0, "2026": -20}}, {"name": "Onon", "sum": -508, "games": 3, "winRate": 33.3, "max": 112, "icon": "🐢", "title": "慢慢來", "yearly": {"2024": 0, "2025": 0, "2026": -508}}];
 
+        // 具體最近五場流水帳
         const INITIAL_LOGS = [
-            {d: "08/04", t: "港式台牌", s: "Ava +661, Annie -53, Haydrian -256, Tina -352"},
-            {d: "05/04", t: "港式台牌", s: "Ava -152, Haydrian +304, Jack +19, Carissa -171"},
-            {d: "04/04", t: "港式台牌", s: "Ava +727, Haydrian +37, Emily -500, Marco -264"},
-            {d: "25/03", t: "廣東牌", s: "Ava +264, Yanyi +80, Haydrian -248, Karis -96"},
-            {d: "20/03", t: "港式台牌", s: "Ava +289, Emily -98, Joey -14, Haydrian -177"}
+            {d: "2026-04-08", t: "tai", s: "Ava +661, annie -53, haydrian -256, tina-352"},
+            {d: "2026-04-05", t: "tai", s: "Ava -152, haydrian +304, jack +19, Carissa -171"},
+            {d: "2026-04-04", t: "tai", s: "Ava +727, haydrian +37, emily -500, marco -264"},
+            {d: "2026-03-25", t: "hk", s: "Ava +264, yanyi +80, haydrian -248, karis -96"},
+            {d: "2026-03-20", t: "tai", s: "Ava +289, emily -98, joey -14, haydrian -177"}
         ];
 
         function switchTab(id, btn) {
@@ -117,57 +147,92 @@
             btn.classList.add('active');
         }
 
-        function renderRank() {
-            document.getElementById('rankList').innerHTML = ALL_PLAYERS.sort((a,b)=>b.sum-a.sum).map((p,i)=>`
-                <div class="p-3 flex justify-between items-center text-sm">
-                    <div class="flex items-center gap-3">
-                        <span class="w-5 text-gray-300 font-black">${i+1}</span>
-                        <span class="font-black text-emerald-900">${p.name}</span>
+        function renderRank(year) {
+            const container = document.getElementById('rankContainer');
+            let sorted = [...ALL_PLAYERS].map(p => ({
+                ...p,
+                displaySum: year === 'all' ? p.sum : (p.yearly[year] || 0)
+            })).filter(p => year === 'all' || p.displaySum !== 0).sort((a,b) => b.displaySum - a.displaySum);
+
+            container.innerHTML = sorted.map((p, i) => `
+                <div class="rank-row p-4 flex justify-between items-center bg-white ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''}">
+                    <div class="flex items-center gap-4">
+                        <span class="w-6 font-black text-gray-400 italic text-sm">${i+1}</span>
+                        <div class="text-2xl">${p.icon}</div>
+                        <div>
+                            <p class="font-black text-emerald-900">${p.name}</p>
+                            <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">${p.title}</p>
+                        </div>
                     </div>
-                    <span class="font-black ${p.sum>=0?'text-emerald-600':'text-red-600'}">${p.sum>0?'+':''}${p.sum}</span>
+                    <div class="text-right">
+                        <p class="font-black text-sm ${p.displaySum >= 0 ? 'text-emerald-600' : 'text-red-600'}">${p.displaySum > 0 ? '+' : ''}${p.displaySum}</p>
+                        <p class="text-[10px] text-gray-400 font-bold">${p.games} 局</p>
+                    </div>
                 </div>
             `).join('');
         }
 
         function renderHall() {
-            document.getElementById('hallGrid').innerHTML = ALL_PLAYERS.map(p=>`
-                <div class="tile-card p-3 bg-white text-xs">
-                    <p class="font-black text-emerald-900 mb-1">${p.name}</p>
-                    <p class="text-gray-400 font-bold">${p.g} 局紀錄</p>
+            const grid = document.getElementById('hallGrid');
+            grid.innerHTML = ALL_PLAYERS.sort((a,b) => b.sum - a.sum).map(p => `
+                <div class="tile-card p-5 bg-white">
+                    <div class="flex justify-between mb-2">
+                        <div class="text-3xl">${p.icon}</div>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full font-black self-center uppercase">${p.title}</span>
+                    </div>
+                    <h3 class="text-xl font-black text-emerald-900">${p.name}</h3>
+                    <div class="grid grid-cols-2 gap-2 mt-4 text-[11px] font-bold text-gray-500">
+                        <div>勝率: ${p.winRate}%</div>
+                        <div class="text-right">總局數: ${p.games}</div>
+                        <div class="${p.sum >= 0 ? 'text-emerald-600' : 'text-red-600'}">總盈虧: ${p.sum}</div>
+                        <div class="text-right text-emerald-600">最高: +${p.max}</div>
+                    </div>
                 </div>
             `).join('');
         }
 
         function renderLogs() {
-            const saved = JSON.parse(localStorage.getItem('mj_logs') || "[]");
-            const all = [...saved, ...INITIAL_LOGS].slice(0, 5);
-            document.getElementById('logsContainer').innerHTML = all.map(l=>`
-                <div class="tile-card p-4 bg-white shadow-sm border-l-4 border-emerald-800">
-                    <div class="flex justify-between text-[10px] font-black text-gray-400 mb-2 uppercase">
-                        <span>${l.d}</span><span>${l.t}</span>
+            const container = document.getElementById('logsContainer');
+            const saved = JSON.parse(localStorage.getItem('mj_final_logs') || "[]");
+            const allLogs = [...saved, ...INITIAL_LOGS];
+
+            container.innerHTML = allLogs.map(l => {
+                const pills = l.s.split(',').map(item => {
+                    const isWin = item.includes('+');
+                    return `<span class="score-pill ${isWin ? 'win' : 'lose'}">${item.trim()}</span>`;
+                }).join('');
+
+                return `
+                    <div class="tile-card p-5 bg-white border-l-8 border-l-emerald-800 shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-black text-gray-400 uppercase tracking-widest">${l.d}</span>
+                            <span class="text-[10px] font-black ${l.t==='tai'?'bg-emerald-800':'bg-blue-800'} text-white px-2 py-1 rounded uppercase">${l.t === 'tai' ? '港式台牌' : '廣東牌'}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">${pills}</div>
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                        ${l.s.split(',').map(item => {
-                            const isWin = item.includes('+');
-                            return `<span class="${isWin?'win-tag':'lose-tag'}">${item.trim()}</span>`;
-                        }).join('')}
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        function saveNew() {
+        function saveRecord() {
             const d = document.getElementById('newDate').value;
             const t = document.getElementById('newType').value;
             const s = document.getElementById('newScore').value;
-            if(!d || !s) return alert("填寫完整數據！");
-            const logs = JSON.parse(localStorage.getItem('mj_logs') || "[]");
-            logs.unshift({d: d.split('-').reverse().slice(0,2).join('/'), t, s});
-            localStorage.setItem('mj_logs', JSON.stringify(logs));
-            location.reload();
+            if(!d || !s) return alert("輸入唔完整喎！");
+
+            const records = JSON.parse(localStorage.getItem('mj_final_logs') || "[]");
+            records.unshift({ d, t, s });
+            localStorage.setItem('mj_final_logs', JSON.stringify(records));
+            
+            alert("搞掂！紀錄已儲存。");
+            location.reload(); // 重新整理以更新所有 Tab 的數據
         }
 
-        window.onload = () => { renderRank(); renderHall(); renderLogs(); };
+        window.onload = () => {
+            renderRank('all');
+            renderHall();
+            renderLogs();
+        };
     </script>
 </body>
 </html>
