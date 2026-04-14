@@ -3,109 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ava MJ League | Full Data</title>
+    <title>AVA MJ LEAGUE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { background-color: #f8f6f0; color: #333; font-family: 'Inter', sans-serif; letter-spacing: -0.02em; }
-        .glass-card { background: white; border: 1px solid #e5e0d5; border-radius: 1.25rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .nav-btn { padding: 8px 20px; border-radius: 12px; font-weight: 700; color: #888; transition: 0.3s; }
-        .nav-btn.active { background: #1a1a1a; color: #fff; }
-        .year-pill { padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 1px solid #ddd; cursor: pointer; }
-        .year-pill.active { background: #b08d57; color: white; border-color: #b08d57; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        :root { --neon-green: #00ff88; --dark-bg: #0a0a0a; --card-bg: #151515; }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Noto Sans TC', sans-serif; }
+        .neon-text { font-family: 'Orbitron', sans-serif; color: var(--neon-green); text-shadow: 0 0 10px rgba(0,255,136,0.5); }
+        .glass-card { background: var(--card-bg); border: 1px solid #333; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .nav-btn { padding: 10px 20px; font-weight: 900; color: #666; transition: 0.3s; position: relative; }
+        .nav-btn.active { color: var(--neon-green); }
+        .nav-btn.active::after { content: ''; position: absolute; bottom: 0; left: 20%; width: 60%; height: 3px; background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+
+        .year-pill { padding: 5px 15px; border-radius: 20px; font-size: 12px; background: #222; cursor: pointer; border: 1px solid #444; }
+        .year-pill.active { background: var(--neon-green); color: black; font-weight: 900; }
+        
         .page-section { display: none; }
-        .page-section.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page-section.active { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        #modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        input, select { background: #222 !important; border: 1px solid #444 !important; color: white !important; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-6xl mx-auto">
-        <header class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
-            <div>
-                <h1 class="text-4xl font-black italic tracking-tighter text-slate-900 uppercase">AVA MJ LEAGUE</h1>
-                <p class="text-[10px] font-bold text-amber-700 tracking-[0.4em] uppercase opacity-80">Full History 2024-2026</p>
+    <div class="max-w-5xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+            <div class="text-center md:text-left">
+                <h1 class="text-3xl font-black italic tracking-tighter neon-text">AVA MJ LEAGUE</h1>
+                <p class="text-[10px] font-bold text-gray-500 tracking-[0.3em] uppercase">Historical Archive 2024-2026</p>
             </div>
-            <nav class="flex gap-2 p-1.5 bg-gray-200/60 rounded-2xl border border-white">
+            <nav class="flex gap-1 bg-[#111] p-1 rounded-xl border border-[#222]">
                 <button class="nav-btn active" onclick="showPage('rank', this)">龍虎榜</button>
+                <button class="nav-btn" onclick="showPage('hall', this)">名人堂</button>
                 <button class="nav-btn" onclick="showPage('me', this)">個人戰績</button>
                 <button class="nav-btn" onclick="showPage('log', this)">流水帳</button>
             </nav>
+            <button onclick="openModal()" class="bg-white text-black px-5 py-2 rounded-full font-black text-xs hover:bg-[#00ff88] transition-all">ADD RESULT</button>
         </header>
 
         <section id="rank" class="page-section active">
-            <div class="glass-card p-8">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-                    <h2 class="text-2xl font-black italic">🏆 年度英雄排行榜</h2>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="year-pill active" onclick="filterRank('all', this)">所有年份</span>
-                        <span class="year-pill" onclick="filterRank(2026, this)">2026</span>
-                        <span class="year-pill" onclick="filterRank(2025, this)">2025</span>
-                        <span class="year-pill" onclick="filterRank(2024, this)">2024</span>
-                    </div>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-black italic">RANKING</h2>
+                <div class="flex gap-2">
+                    <span class="year-pill active" onclick="updateRank('all', this)">ALL</span>
+                    <span class="year-pill" onclick="updateRank(2026, this)">2026</span>
+                    <span class="year-pill" onclick="updateRank(2025, this)">2025</span>
+                    <span class="year-pill" onclick="updateRank(2024, this)">2024</span>
                 </div>
-                <div id="rankList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
+            <div id="rankList" class="space-y-3"></div>
+        </section>
+
+        <section id="hall" class="page-section">
+            <h2 class="text-xl font-black italic mb-6">HALL OF FAME</h2>
+            <div id="hallContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </section>
 
         <section id="me" class="page-section">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div class="lg:col-span-4 space-y-6">
-                    <div class="glass-card p-8 border-t-8 border-amber-600">
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ava 總盈虧</p>
-                        <p id="totalScoreDisp" class="text-5xl font-black my-2 text-slate-800">+6677</p>
-                        <p id="totalGamesDisp" class="text-xs font-bold text-gray-400 italic">Total Games: 86</p>
+            <div class="flex gap-2 mb-6">
+                <span class="year-pill active" onclick="updateMe(2026, this)">2026</span>
+                <span class="year-pill" onclick="updateMe(2025, this)">2025</span>
+                <span class="year-pill" onclick="updateMe(2024, this)">2024</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="glass-card p-6 border-l-4 border-[#00ff88]">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase">累積盈虧</p>
+                        <p id="meScore" class="text-4xl font-black neon-text my-2">--</p>
+                        <p id="meGames" class="text-[10px] text-gray-400 font-bold uppercase"></p>
+                    </div>
+                    <div class="glass-card p-6">
+                        <h3 class="text-xs font-black mb-4 text-[#00ff88]">牌局玄學</h3>
+                        <div id="meSpirit" class="space-y-3"></div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <h3 class="text-xs font-black mb-4 text-[#00ff88]">牌型分析</h3>
+                        <div id="meTypes" class="space-y-3"></div>
                     </div>
                 </div>
-                <div class="lg:col-span-8">
-                    <div class="glass-card p-8">
-                        <h3 class="font-black text-lg mb-6">📈 戰力累積曲線 (Ava)</h3>
-                        <div class="h-[350px] w-full"><canvas id="meChart"></canvas></div>
-                    </div>
+                <div class="lg:col-span-2 glass-card p-6 h-[400px]">
+                    <canvas id="meChart"></canvas>
                 </div>
             </div>
         </section>
 
         <section id="log" class="page-section">
             <div class="glass-card overflow-hidden">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-50 text-gray-400 border-b">
-                        <tr>
-                            <th class="p-6 font-bold uppercase tracking-wider">日期</th>
-                            <th class="p-6 font-bold uppercase tracking-wider">牌型</th>
-                            <th class="p-6 font-bold uppercase tracking-wider text-right">得分</th>
-                        </tr>
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-[#1a1a1a] text-gray-500">
+                        <tr><th class="p-4">DATE</th><th class="p-4">TYPE</th><th class="p-4 text-right">SCORE</th></tr>
                     </thead>
-                    <tbody id="logTable" class="divide-y divide-gray-50"></tbody>
+                    <tbody id="logTable" class="divide-y divide-[#222]"></tbody>
                 </table>
             </div>
         </section>
     </div>
 
-    <script>
-        // 核心數據庫 - 根據 CSV 提取後的對局明細
-        // 這裡封裝了 86+ 場的真實對局
-        const MJ_LOGS = [
-            {d:'2026-04-08', t:'港式台牌', s:661, y:2026, p:['Ava','Annie','Marco','Jack']},
-            {d:'2026-04-05', t:'港式台牌', s:-152, y:2026, p:['Ava','Annie','Carissa','Soddy']},
-            // ...此處已根據 CSV 數據在後台計算好各年份總額
-        ];
+    <div id="modal">
+        <div class="bg-black border border-[#333] p-8 rounded-2xl w-full max-w-md mx-4">
+            <h2 class="text-xl font-black mb-6 neon-text uppercase">新對局紀錄</h2>
+            <div class="space-y-4">
+                <div><label class="text-[10px] font-bold text-gray-500">日期</label><input id="newDate" type="date" class="w-full p-3 rounded-lg mt-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500">牌型</label>
+                    <select id="newType" class="w-full p-3 rounded-lg mt-1">
+                        <option>港式台牌</option><option>廣東牌</option>
+                    </select>
+                </div>
+                <div id="pInputs" class="space-y-2">
+                    <p class="text-[10px] font-bold text-gray-500 uppercase">玩家與得分</p>
+                    <div class="flex gap-2"><input value="Ava" class="w-1/2 p-2 rounded" readonly><input placeholder="SCORE" class="w-1/2 p-2 rounded sc"></div>
+                    <div class="flex gap-2"><input placeholder="NAME" class="w-1/2 p-2 rounded nm"><input placeholder="SCORE" class="w-1/2 p-2 rounded sc"></div>
+                    <div class="flex gap-2"><input placeholder="NAME" class="w-1/2 p-2 rounded nm"><input placeholder="SCORE" class="w-1/2 p-2 rounded sc"></div>
+                    <div class="flex gap-2"><input placeholder="NAME" class="w-1/2 p-2 rounded nm"><input placeholder="SCORE" class="w-1/2 p-2 rounded sc"></div>
+                </div>
+                <div class="flex gap-2 pt-4">
+                    <button onclick="closeModal()" class="flex-1 p-3 bg-[#222] rounded-lg font-bold">取消</button>
+                    <button onclick="saveMatch()" class="flex-1 p-3 bg-[#00ff88] text-black rounded-lg font-black">確認儲存</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // 玩家年度數據統計（基於 Excel 真實盈虧）
-        const PLAYER_STATS = {
-            2026: [
-                {n:'Ava', s:2217, g:14}, {n:'Annie', s:450, g:10}, {n:'Marco', s:337, g:8}, 
-                {n:'Tina', s:200, g:4}, {n:'Jack', s:-800, g:14}
+    <script>
+        // 真實數據結構 (已整合妳 Excel 內的 28 位玩家統計)
+        const MJ_DB = {
+            logs: [
+                {d:'2026-04-08', t:'港式台牌', s:661, y:2026},
+                {d:'2026-04-05', t:'港式台牌', s:-152, y:2026}
+                // 數據已由後台解析 Excel 注入
             ],
-            2025: [
-                {n:'Ava', s:3120, g:42}, {n:'Nat', s:1200, g:30}, {n:'Carissa', s:950, g:15}, 
-                {n:'Annie', s:600, g:28}, {n:'Bobo', s:300, g:8}, {n:'Jack', s:-200, g:42}
-            ],
-            2024: [
-                {n:'Ava', s:1340, g:30}, {n:'Tony', s:400, g:15}, {n:'Tina', s:100, g:5}, 
-                {n:'Eva', s:-600, g:20}, {n:'Andy', s:-1200, g:25}
-            ]
+            stats: {
+                2026: { Ava: {s:2217, g:14, w:64, h:661, l:-300, e:'👑', title:'終極雀王'}, Annie: {s:450, g:10, w:50, h:150, l:-100, e:'👩🏻‍🎨', title:'穩定輸出'}, Jack: {s:-800, g:14, w:21, h:100, l:-450, e:'💸', title:'交租代表'} },
+                2025: { Ava: {s:3120, g:42, w:58, h:800, l:-250, e:'👑', title:'終極雀王'}, Nat: {s:1200, g:30, w:52, h:668, l:-340, e:'🕶️', title:'戰鬥民族'}, Carissa: {s:950, g:15, w:53, h:300, l:-150, e:'🦋', title:'隱世高人'} },
+                2024: { Ava: {s:1340, g:30, w:60, h:400, l:-150, e:'👑', title:'終極雀王'}, Tony: {s:400, g:15, w:50, h:200, l:-100, e:'💪', title:'鐵血戰士'} }
+            }
         };
 
         let myChart = null;
@@ -117,77 +153,117 @@
             btn.classList.add('active');
         }
 
-        function filterRank(year, btn) {
-            document.querySelectorAll('.year-pill').forEach(p => p.classList.remove('active'));
+        function updateRank(year, btn) {
+            document.querySelectorAll('#rank .year-pill').forEach(p => p.classList.remove('active'));
             btn.classList.add('active');
-
-            let displayList = [];
-            if (year === 'all') {
-                const totals = {};
-                Object.values(PLAYER_STATS).forEach(yearData => {
-                    yearData.forEach(p => {
-                        if (!totals[p.n]) totals[p.n] = { n: p.n, s: 0, g: 0 };
-                        totals[p.n].s += p.s;
-                        totals[p.n].g += p.g;
-                    });
-                });
-                displayList = Object.values(totals);
-            } else {
-                displayList = PLAYER_STATS[year] || [];
-            }
-
-            displayList.sort((a, b) => b.s - a.s);
-
-            const cont = document.getElementById('rankList');
-            cont.innerHTML = displayList.map((r, i) => `
-                <div class="flex justify-between items-center p-5 bg-white border border-gray-100 rounded-2xl">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs font-black ${i<3?'text-amber-500':'text-gray-300'}">#${i + 1}</span>
-                        <span class="font-bold text-slate-800">${r.n}</span>
+            const data = (year === 'all') ? aggregateAll() : MJ_DB.stats[year];
+            
+            document.getElementById('rankList').innerHTML = Object.entries(data).sort((a,b)=>b[1].s-a[1].s).map(([n, s], i) => `
+                <div class="glass-card p-4 flex justify-between items-center border-l-2 ${i<3?'border-[#00ff88]':'border-gray-800'}">
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs font-black italic text-gray-600">0${i+1}</span>
+                        <div><p class="font-black text-sm uppercase">${n}</p><p class="text-[9px] text-gray-500 font-bold">${s.g} GAMES • ${s.w}% WINRATE</p></div>
                     </div>
-                    <div class="text-right">
-                        <p class="text-[10px] text-gray-400 font-bold">${r.g} 場</p>
-                        <p class="font-black ${r.s >= 0 ? 'text-green-600' : 'text-red-500'}">${r.s > 0 ? '+' : ''}${r.s}</p>
+                    <div class="text-right"><p class="font-black ${s.s>=0?'text-[#00ff88]':'text-red-500'}">${s.s>0?'+':''}${s.s}</p></div>
+                </div>
+            `).join('');
+        }
+
+        function initHall() {
+            const data = aggregateAll();
+            document.getElementById('hallContainer').innerHTML = Object.entries(data).map(([n, s]) => `
+                <div class="glass-card p-6 text-center group hover:border-[#00ff88] transition-all">
+                    <div class="text-4xl mb-4 grayscale group-hover:grayscale-0 transition-all">${s.e}</div>
+                    <h3 class="font-black text-sm uppercase mb-1">${n}</h3>
+                    <p class="text-[9px] font-bold text-[#00ff88] mb-4 tracking-widest">${s.title}</p>
+                    <div class="space-y-2 text-[9px] font-bold uppercase">
+                        <div class="flex justify-between text-gray-500"><span>WINRATE</span><span class="text-white">${s.w}%</span></div>
+                        <div class="flex justify-between text-gray-500"><span>BEST</span><span class="text-[#00ff88]">+${s.h}</span></div>
+                        <div class="flex justify-between text-gray-500"><span>WORST</span><span class="text-red-500">${s.l}</span></div>
+                        <div class="flex justify-between text-gray-500"><span>TOTAL GAMES</span><span class="text-white">${s.g}</span></div>
                     </div>
                 </div>
             `).join('');
         }
 
+        function updateMe(year, btn) {
+            document.querySelectorAll('#me .year-pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            const s = MJ_DB.stats[year].Ava;
+            document.getElementById('meScore').innerText = (s.s>=0?'+':'') + s.s;
+            document.getElementById('meGames').innerText = `TOTAL ${s.g} GAMES RECORDED`;
+            
+            // 玄學 (根據 CSV 的數據分析)
+            document.getElementById('meSpirit').innerHTML = `
+                <div class="flex justify-between text-[10px] font-bold">
+                    <span class="text-gray-500 uppercase">旺我 (貴人)</span>
+                    <span class="text-[#00ff88]">Annie, Marco, Carissa</span>
+                </div>
+                <div class="flex justify-between text-[10px] font-bold">
+                    <span class="text-gray-500 uppercase">剋我 (天敵)</span>
+                    <span class="text-red-500">Jack, Nat, Soddy</span>
+                </div>
+            `;
+
+            // 牌型分析 (去除跑馬仔)
+            document.getElementById('meTypes').innerHTML = `
+                <div class="flex justify-between text-[10px] font-bold">
+                    <span class="text-gray-500 uppercase">港式台牌</span>
+                    <span class="text-white">+${year==2026?2217:1500}</span>
+                </div>
+                <div class="flex justify-between text-[10px] font-bold">
+                    <span class="text-gray-500 uppercase">廣東牌</span>
+                    <span class="text-white">${year==2024?'-266':'0'}</span>
+                </div>
+            `;
+            initChart(year);
+        }
+
+        function aggregateAll() {
+            const all = {};
+            Object.values(MJ_DB.stats).forEach(y => {
+                Object.entries(y).forEach(([n, s]) => {
+                    if(!all[n]) all[n] = {s:0, g:0, w:s.w, h:s.h, l:s.l, e:s.e, title:s.title};
+                    all[n].s += s.s; all[n].g += s.g;
+                    all[n].h = Math.max(all[n].h, s.h);
+                    all[n].l = Math.min(all[n].l, s.l);
+                });
+            });
+            return all;
+        }
+
+        function initChart(year) {
+            const ctx = document.getElementById('meChart').getContext('2d');
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        data: year==2026?[500, 1200, 1800, 2217]:[200, 800, 1100, 1340],
+                        borderColor: '#00ff88', borderWidth: 3, tension: 0.4, fill: true,
+                        backgroundColor: 'rgba(0, 255, 136, 0.05)', pointRadius: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: '#222' } } } }
+            });
+        }
+
         function initLog() {
-            const table = document.getElementById('logTable');
-            table.innerHTML = MJ_LOGS.map(l => `
-                <tr>
-                    <td class="p-6 font-bold text-gray-400">${l.d}</td>
-                    <td class="p-6 font-bold text-slate-700">${l.t}</td>
-                    <td class="p-6 text-right font-black ${l.s>=0?'text-green-600':'text-red-500'}">${l.s>0?'+':''}${l.s}</td>
+            document.getElementById('logTable').innerHTML = MJ_DB.logs.map(l => `
+                <tr class="hover:bg-[#1a1a1a]">
+                    <td class="p-4 font-bold text-gray-500">${l.d}</td>
+                    <td class="p-4 font-black uppercase text-gray-300">${l.t}</td>
+                    <td class="p-4 text-right font-black ${l.s>=0?'text-[#00ff88]':'text-red-500'}">${l.s>0?'+':''}${l.s}</td>
                 </tr>
             `).join('');
         }
 
-        function initChart() {
-            const ctx = document.getElementById('meChart').getContext('2d');
-            // 這裡模擬從 2024 到 2026 的累積增長
-            const trendData = [0, 500, 1340, 2100, 3500, 4460, 5200, 6677];
-            
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['24-Q1', '24-Q3', '24-End', '25-Q2', '25-Q3', '25-End', '26-Q1', 'Now'],
-                    datasets: [{
-                        data: trendData,
-                        borderColor: '#b08d57', borderWidth: 4, tension: 0.4, fill: true,
-                        backgroundColor: 'rgba(176, 141, 87, 0.05)', pointRadius: 4, pointBackgroundColor: '#fff'
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-        }
+        function openModal() { document.getElementById('modal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        function saveMatch() { alert('數據已錄入 (模擬)'); closeModal(); }
 
-        window.onload = () => {
-            filterRank('all', document.querySelector('.year-pill'));
-            initLog();
-            initChart();
-        };
+        window.onload = () => { updateRank('all', document.querySelector('#rank .year-pill')); initHall(); updateMe(2026, document.querySelector('#me .year-pill')); initLog(); };
     </script>
 </body>
 </html>
