@@ -7,26 +7,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
-        :root { --mj-green: #064e3b; --mj-tile: #fdfbf7; --mj-red: #b91c1c; }
+        :root { --mj-green: #064e3b; --mj-tile: #fdfbf7; --mj-red: #b91c1c; --mj-gold: #d4af37; }
         body { background-color: var(--mj-green); font-family: 'Noto Sans TC', sans-serif; background-image: radial-gradient(#065f46 2px, transparent 2px); background-size: 30px 30px; }
         .title-font { font-family: 'Noto Serif TC', serif; color: var(--mj-tile); text-shadow: 4px 4px 0px var(--mj-red); }
-        .nav-btn { padding: 12px 24px; border-radius: 12px; color: white; font-weight: 900; cursor: pointer; transition: 0.3s; opacity: 0.7; }
-        .nav-btn.active { background: var(--mj-tile); color: var(--mj-green); opacity: 1; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .nav-btn { padding: 12px 24px; border-radius: 12px; color: white; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .nav-btn.active { background: var(--mj-tile); color: var(--mj-green); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .tile-card { background: var(--mj-tile); border-bottom: 5px solid #d1d5db; border-right: 5px solid #d1d5db; border-radius: 12px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .rank-row { border-left: 8px solid transparent; }
+        .rank-row { border-left: 8px solid transparent; transition: 0.2s; }
         .rank-1 { border-left-color: #fbbf24; background: linear-gradient(90deg, #fef3c7, transparent); }
         .rank-2 { border-left-color: #94a3b8; background: linear-gradient(90deg, #f1f5f9, transparent); }
         .rank-3 { border-left-color: #d97706; background: linear-gradient(90deg, #ffedd5, transparent); }
-        input, select { border: 2px solid #e5e7eb; border-radius: 8px; padding: 8px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        input, select { border: 2px solid #e5e7eb; border-radius: 8px; padding: 8px; font-weight: bold; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-6xl mx-auto">
         <header class="text-center mb-10">
-            <h1 class="text-6xl md:text-7xl title-font tracking-tighter">🀄️ 雀王爭霸戰 🀄️</h1>
+            <h1 class="text-7xl title-font tracking-tighter mb-4">🀄️ 雀王爭霸戰 🀄️</h1>
         </header>
 
         <nav class="flex flex-wrap justify-center gap-3 mb-10">
@@ -39,12 +39,12 @@
 
         <div id="tab1" class="tab-content active">
             <div class="flex justify-center gap-2 mb-8">
-                <button class="px-5 py-2 rounded-full bg-emerald-900 text-white font-black text-sm" onclick="renderRank('all')">總排名</button>
-                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-sm" onclick="renderRank('2026')">2026</button>
-                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-sm" onclick="renderRank('2025')">2025</button>
-                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-sm" onclick="renderRank('2024')">2024</button>
+                <button class="px-5 py-2 rounded-full bg-emerald-900 text-white font-black text-sm" onclick="updateRank('all')">總排名</button>
+                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-sm" onclick="updateRank('2026')">2026</button>
+                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-sm" onclick="updateRank('2025')">2025</button>
+                <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-sm" onclick="updateRank('2024')">2024</button>
             </div>
-            <div class="tile-card bg-white overflow-hidden shadow-2xl">
+            <div class="tile-card bg-white overflow-hidden">
                 <div id="rankContainer" class="divide-y divide-gray-100"></div>
             </div>
         </div>
@@ -60,83 +60,67 @@
                         <h3 class="font-black text-gray-400 mb-2 uppercase text-xs">🀄️ 牌型分析 (累積盈虧)</h3>
                         <div class="grid grid-cols-2 gap-4 mt-4">
                             <div class="p-4 bg-emerald-50 rounded-xl">
-                                <p class="text-xs font-bold text-emerald-800">港式台牌</p>
-                                <p id="tw-profit" class="text-2xl font-black text-emerald-600">--</p>
+                                <p class="text-[10px] font-bold text-emerald-800">港式台牌</p>
+                                <p id="tw-profit" class="text-3xl font-black text-emerald-600">+$661</p>
                             </div>
                             <div class="p-4 bg-slate-50 rounded-xl">
-                                <p class="text-xs font-bold text-slate-800">廣東牌</p>
-                                <p id="hk-profit" class="text-2xl font-black text-slate-600">--</p>
+                                <p class="text-[10px] font-bold text-slate-800">廣東牌</p>
+                                <p id="hk-profit" class="text-3xl font-black text-slate-600">+$0</p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="tile-card p-6 bg-white">
-                        <h3 class="font-black text-emerald-900 mb-4 border-b pb-2">🔮 牌局玄學 (數據版)</h3>
-                        <div class="space-y-4 text-sm">
+                        <h3 class="font-black text-emerald-900 mb-4 border-b pb-2">🔮 牌局玄學 (數據分析)</h3>
+                        <div class="space-y-4 text-sm font-bold">
                             <div>
                                 <p class="text-emerald-600 font-black mb-1">最旺貴人 (同場贏最多)</p>
-                                <div class="font-bold space-y-1">
-                                    <div class="flex justify-between"><span>1. Haydrian</span><span class="text-emerald-600">+1845</span></div>
-                                    <div class="flex justify-between"><span>2. Annie</span><span class="text-emerald-600">+920</span></div>
-                                    <div class="flex justify-between"><span>3. Nat</span><span class="text-emerald-600">+640</span></div>
-                                </div>
+                                <p>1. Haydrian (+1845) / 2. Annie (+920) / 3. Nat (+640)</p>
                             </div>
-                            <hr>
                             <div>
                                 <p class="text-red-600 font-black mb-1">剋星天敵 (同場輸最多)</p>
-                                <div class="font-bold space-y-1">
-                                    <div class="flex justify-between"><span>1. Jack</span><span class="text-red-600">-1240</span></div>
-                                    <div class="flex justify-between"><span>2. Emily</span><span class="text-red-600">-855</span></div>
-                                    <div class="flex justify-between"><span>3. Yanyi</span><span class="text-red-600">-530</span></div>
-                                </div>
+                                <p>1. Jack (-1240) / 2. Emily (-855) / 3. Yanyi (-530)</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="tile-card p-8 bg-white flex flex-col justify-center items-center text-center">
-                    <p class="text-xs font-black text-gray-400 mb-2">Ava 總盈虧</p>
-                    <p id="ava-total-sum" class="text-7xl font-black text-emerald-600">+0</p>
-                    <div class="mt-8 grid grid-cols-2 gap-8 w-full">
-                        <div><p class="text-gray-400 text-[10px] font-black uppercase">總場數</p><p id="ava-total-games" class="text-2xl font-bold">0</p></div>
-                        <div><p class="text-gray-400 text-[10px] font-black uppercase">平均每局</p><p id="ava-avg" class="text-2xl font-bold">0</p></div>
-                    </div>
+                <div class="tile-card p-10 bg-white flex flex-col justify-center items-center">
+                    <p class="text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Ava 累積總盈虧</p>
+                    <p id="ava-total-sum" class="text-7xl font-black text-emerald-600">+6677</p>
                 </div>
             </div>
         </div>
 
         <div id="tab4" class="tab-content">
-            <div class="max-w-2xl mx-auto tile-card bg-white overflow-hidden shadow-xl">
-                <div class="p-4 bg-gray-50 border-b font-black text-center text-emerald-900">最近五局紀錄</div>
-                <div id="logList" class="divide-y divide-gray-100"></div>
+            <div class="max-w-2xl mx-auto tile-card bg-white overflow-hidden">
+                <div id="logListCompact" class="divide-y divide-gray-100"></div>
             </div>
         </div>
 
         <div id="tab5" class="tab-content">
-            <div class="max-w-2xl mx-auto tile-card p-8 bg-white shadow-2xl">
-                <h2 class="text-2xl font-black mb-6 text-emerald-900 border-b pb-4 text-center">新增戰局數據</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div class="flex flex-col"><label class="text-xs font-black mb-1">日期</label><input type="date" id="input-date" class="font-bold"></div>
-                    <div class="flex flex-col"><label class="text-xs font-black mb-1">牌型玩法</label>
-                        <select id="input-type" class="font-bold">
-                            <option value="tw">港式台牌</option>
-                            <option value="hk">廣東牌</option>
-                        </select>
+            <div class="max-w-xl mx-auto tile-card p-8 bg-white">
+                <h3 class="text-xl font-black text-emerald-900 mb-6 border-b pb-2 text-center">錄入新戰局</h3>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex flex-col"><label class="text-[10px] font-black mb-1 uppercase text-gray-400">日期</label><input type="date" id="new-date"></div>
+                        <div class="flex flex-col"><label class="text-[10px] font-black mb-1 uppercase text-gray-400">玩法</label>
+                            <select id="new-type"><option value="tw">港式台牌</option><option value="hk">廣東牌</option></select>
+                        </div>
                     </div>
+                    <hr>
+                    <div id="score-rows" class="space-y-3">
+                        </div>
+                    <button onclick="addNewGame()" class="w-full bg-emerald-900 text-white font-black py-4 rounded-xl mt-4 shadow-lg hover:bg-emerald-800 transition">確認並同步更新</button>
                 </div>
-                <div id="score-inputs" class="space-y-4">
-                    </div>
-                <button onclick="saveRecord()" class="w-full mt-8 bg-emerald-900 text-white font-black py-4 rounded-xl shadow-lg hover:bg-emerald-800 transition transform active:scale-95">確認存檔並更新網站</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 35 位玩家基礎名單
-        const PLAYERS_LIST = ["Ava", "Annie", "Charles", "Nat", "Wadee", "Yanyi", "Lailo", "Karis", "Haydrian", "Tina", "Marco", "Carissa", "Tony", "Irene", "Eva", "Andy", "Winnie", "Jayden", "Bobo", "Kit", "Gut", "Cathy", "Kyros", "Heidi", "Colbert", "Soddy", "Emily", "Don", "Jack", "Sunho", "Harry", "Joe", "Joey", "Stephy", "Onon"];
+        // 基礎數據 (含 35 位玩家)
+        const PLAYERS_NAMES = ["Ava", "Annie", "Charles", "Nat", "Wadee", "Yanyi", "Lailo", "Karis", "Haydrian", "Tina", "Marco", "Carissa", "Tony", "Irene", "Eva", "Andy", "Winnie", "Jayden", "Bobo", "Kit", "Gut", "Cathy", "Kyros", "Heidi", "Colbert", "Soddy", "Emily", "Don", "Jack", "Sunho", "Harry", "Joe", "Joey", "Stephy", "Onon"];
 
-        // 初始化數據：優先從 localStorage 讀取，若無則使用初始數據
-        let gameLogs = JSON.parse(localStorage.getItem('gameLogs')) || [
+        // 從 LocalStorage 獲取，若無則用你給的近期戰績初始化
+        let localLogs = JSON.parse(localStorage.getItem('mj_logs')) || [
             {d: "2026-04-08", type: "tw", scores: {"Ava": 661, "Haydrian": -200, "Annie": -100, "Tina": -361}},
             {d: "2026-04-05", type: "tw", scores: {"Ava": -152, "Haydrian": -244, "Jack": 212, "Carissa": 184}},
             {d: "2026-04-04", type: "tw", scores: {"Ava": 727, "Haydrian": 100, "Marco": -500, "Emily": -327}},
@@ -149,48 +133,52 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             btn.classList.add('active');
-            if(id === 'tab1') renderRank('all');
+            if(id === 'tab1') updateRank('all');
             if(id === 'tab2') renderHall();
             if(id === 'tab4') renderLogs();
             if(id === 'tab5') initInputForm();
         }
 
-        function calculateStats() {
-            let playerStats = {};
-            PLAYERS_LIST.forEach(name => {
-                playerStats[name] = { name, sum: 0, games: 0, yearly: {"2024":0, "2025":0, "2026":0}, icon: "🀄️", title: "雀壇精英" };
-            });
+        function getFullStats() {
+            let stats = PLAYERS_NAMES.map(name => ({
+                name, sum: 0, games: 0, winRate: 50, max: 800, icon: "🀄️", title: "雀壇精英", 
+                yearly: {"2024": 0, "2025": 0, "2026": 0}
+            }));
 
-            gameLogs.forEach(log => {
+            localLogs.forEach(log => {
                 const year = log.d.split('-')[0];
                 for (let [name, score] of Object.entries(log.scores)) {
-                    if (playerStats[name]) {
-                        playerStats[name].sum += score;
-                        playerStats[name].games += 1;
-                        if (playerStats[name].yearly[year] !== undefined) playerStats[name].yearly[year] += score;
+                    let p = stats.find(s => s.name === name);
+                    if (p) {
+                        p.sum += score;
+                        p.games += 1;
+                        if (p.yearly[year] !== undefined) p.yearly[year] += score;
+                        if (score > p.max) p.max = score;
                     }
                 }
             });
-            return Object.values(playerStats);
+            return stats;
         }
 
-        function renderRank(year) {
-            const stats = calculateStats();
+        function updateRank(year) {
+            const stats = getFullStats();
             const container = document.getElementById('rankContainer');
-            const sorted = stats
-                .map(p => ({ ...p, showSum: year === 'all' ? p.sum : p.yearly[year] }))
-                .filter(p => p.games > 0 || year === 'all')
-                .sort((a, b) => b.showSum - a.showSum);
+            let sorted = stats.map(p => ({
+                ...p,
+                currentSum: year === 'all' ? p.sum : (p.yearly[year] || 0)
+            }))
+            .filter(p => p.games > 0)
+            .sort((a,b) => b.currentSum - a.currentSum);
 
             container.innerHTML = sorted.map((p, i) => `
-                <div class="rank-row p-5 flex justify-between items-center bg-white ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''}">
+                <div class="rank-row p-4 flex justify-between items-center ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''}">
                     <div class="flex items-center gap-4">
-                        <span class="font-black text-slate-300 italic w-4">${i+1}</span>
+                        <span class="w-6 font-black text-gray-400 italic">${i+1}</span>
                         <div class="text-2xl">${p.icon}</div>
                         <div><p class="font-black text-emerald-900">${p.name}</p></div>
                     </div>
                     <div class="text-right">
-                        <p class="font-black ${p.showSum>=0?'text-emerald-600':'text-red-600'}">${p.showSum>0?'+':''}${p.showSum}</p>
+                        <p class="font-black ${p.currentSum>=0?'text-emerald-600':'text-red-600'}">${p.currentSum>0?'+':''}${p.currentSum}</p>
                         <p class="text-[10px] text-gray-400">${p.games} 場</p>
                     </div>
                 </div>
@@ -198,27 +186,27 @@
         }
 
         function renderHall() {
-            const stats = calculateStats();
+            const stats = getFullStats();
             const grid = document.getElementById('hallGrid');
-            grid.innerHTML = stats.sort((a,b) => b.sum - a.sum).map(p => `
+            grid.innerHTML = stats.filter(p => p.games > 0).sort((a,b) => b.sum - a.sum).map(p => `
                 <div class="tile-card p-5 bg-white">
-                    <h3 class="text-xl font-black text-emerald-900">${p.name}</h3>
-                    <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
-                        <div><p class="text-gray-400 text-[10px] font-black uppercase">總盈虧</p><p class="font-bold ${p.sum>=0?'text-emerald-600':'text-red-600'}">${p.sum}</p></div>
-                        <div><p class="text-gray-400 text-[10px] font-black uppercase">場數</p><p class="font-bold">${p.games}</p></div>
+                    <h3 class="text-xl font-black text-emerald-900 mb-4">${p.name}</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm font-bold">
+                        <div><p class="text-gray-400 text-[10px] font-black uppercase">總盈虧</p><p class="${p.sum>=0?'text-emerald-600':'text-red-600'}">${p.sum}</p></div>
+                        <div><p class="text-gray-400 text-[10px] font-black uppercase">場數</p><p>${p.games}</p></div>
                     </div>
                 </div>
             `).join('');
         }
 
         function renderLogs() {
-            const list = document.getElementById('logList');
-            const recent = [...gameLogs].sort((a,b) => b.d.localeCompare(a.d)).slice(0, 5);
+            const list = document.getElementById('logListCompact');
+            const recent = [...localLogs].sort((a,b) => b.d.localeCompare(a.d)).slice(0, 5);
             list.innerHTML = recent.map(l => `
-                <div class="p-4 flex justify-between items-center hover:bg-gray-50 transition">
+                <div class="p-4 flex justify-between items-center">
                     <div>
-                        <p class="text-[10px] font-black text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded inline-block mb-1">${l.d}</p>
-                        <p class="text-xs font-bold text-slate-500">${Object.keys(l.scores).join(' / ')}</p>
+                        <p class="text-[10px] font-black text-slate-300 font-mono">${l.d} · ${l.type === 'tw' ? '港式台牌' : '廣東牌'}</p>
+                        <p class="text-xs font-bold text-slate-600">${Object.keys(l.scores).join(', ')}</p>
                     </div>
                     <div class="text-right font-black ${l.scores['Ava']>=0?'text-emerald-600':'text-red-600'}">
                         ${l.scores['Ava']>0?'+':''}${l.scores['Ava'] || 0}
@@ -228,39 +216,52 @@
         }
 
         function initInputForm() {
-            const container = document.getElementById('score-inputs');
-            container.innerHTML = [1,2,3,4].map(i => `
-                <div class="flex gap-2 items-center">
-                    <span class="text-xs font-black w-8">P${i}</span>
-                    <select class="w-1/2 player-select font-bold">
+            const rows = document.getElementById('score-rows');
+            rows.innerHTML = [1,2,3,4].map(i => `
+                <div class="flex gap-2">
+                    <select class="w-2/3 player-sel font-bold">
                         <option value="">選擇玩家</option>
-                        ${PLAYERS_LIST.map(name => `<option value="${name}">${name}</option>`).join('')}
+                        ${PLAYERS_NAMES.map(n => `<option value="${n}">${n}</option>`).join('')}
                     </select>
-                    <input type="number" class="w-1/2 score-input font-bold" placeholder="得分">
+                    <input type="number" class="w-1/3 score-val font-bold" placeholder="得分">
                 </div>
             `).join('');
         }
 
-        function saveRecord() {
-            const date = document.getElementById('input-date').value;
-            const type = document.getElementById('input-type').value;
-            const selects = document.querySelectorAll('.player-select');
-            const inputs = document.querySelectorAll('.score-input');
+        function addNewGame() {
+            const date = document.getElementById('new-date').value;
+            const type = document.getElementById('new-type').value;
+            const sels = document.querySelectorAll('.player-sel');
+            const vals = document.querySelectorAll('.score-val');
             
-            if (!date) return alert("請選擇日期");
+            if(!date) return alert("日期呢？");
             
-            let newScores = {};
-            selects.forEach((sel, i) => {
-                if (sel.value) newScores[sel.value] = parseInt(inputs[i].value || 0);
-            });
-
-            if (Object.keys(newScores).length < 2) return alert("請至少輸入兩位玩家的分數");
-
-            gameLogs.push({ d: date, type, scores: newScores });
-            localStorage.setItem('gameLogs', JSON.stringify(gameLogs));
+            let scores = {};
+            sels.forEach((s, i) => { if(s.value) scores[s.value] = parseInt(vals[i].value || 0); });
             
-            alert("數據已保存！");
-            location.reload(); // 重新整理頁面以更新所有數據
+            localLogs.push({d: date, type, scores});
+            localStorage.setItem('mj_logs', JSON.stringify(localLogs));
+            alert("成功存檔！");
+            location.reload(); 
         }
 
-        function
+        function renderAvaStats() {
+            const stats = getFullStats();
+            const ava = stats.find(p => p.name === "Ava");
+            document.getElementById('ava-total-sum').innerText = (ava.sum >= 0 ? '+' : '') + ava.sum;
+            
+            const twTotal = localLogs.filter(l => l.type === 'tw').reduce((s, l) => s + (l.scores['Ava'] || 0), 0);
+            const hkTotal = localLogs.filter(l => l.type === 'hk').reduce((s, l) => s + (l.scores['Ava'] || 0), 0);
+            document.getElementById('tw-profit').innerText = (twTotal >= 0 ? '+' : '') + twTotal;
+            document.getElementById('hk-profit').innerText = (hkTotal >= 0 ? '+' : '') + hkTotal;
+        }
+
+        window.onload = () => {
+            updateRank('all');
+            renderHall();
+            renderLogs();
+            renderAvaStats();
+        };
+    </script>
+</body>
+</html>
