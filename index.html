@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>麻雀龍虎榜 - Ava 專屬版</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f5f2e9; color: #4a4843; font-family: system-ui, -apple-system, sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); border: 1px solid #e2ddd0; border-radius: 1.5rem; }
+        .accent-color { color: #b08d57; }
+        .nav-tab { cursor: pointer; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: 0.3s; }
+        .nav-tab:hover { background: #efebe0; }
+        .badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .badge-hk { background: #e0f2fe; color: #0369a1; }
+        .badge-tai { background: #fef2f2; color: #991b1b; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tighter">🀄 麻雀龍虎榜 <span class="text-sm font-normal bg-slate-800 text-white px-2 py-0.5 rounded ml-2 italic">PRO</span></h1>
+                <p class="text-sm accent-color mt-1">Ava 雀王爭霸專用數據看板</p>
+            </div>
+            <div class="flex gap-2 text-sm font-bold text-slate-500">
+                <span class="nav-tab">龍虎榜</span>
+                <span class="nav-tab">名人堂</span>
+                <span class="nav-tab text-slate-800 bg-white shadow-sm border border-beige-200">個人戰績</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-4 space-y-6">
+                <div class="glass-card p-6 shadow-sm">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">🏆 年度排名 <span class="text-[10px] text-gray-400 font-normal">2024-2026</span></h2>
+                    <div id="rankings" class="space-y-3">
+                        </div>
+                </div>
+
+                <div class="glass-card p-6 shadow-sm">
+                    <h2 class="text-lg font-bold mb-4">🔮 牌局玄學</h2>
+                    <div class="space-y-4">
+                        <div class="p-3 bg-green-50 rounded-xl border border-green-100">
+                            <div class="text-xs text-green-700 font-bold mb-1">✨ 貴人 (旺我)</div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-slate-700">Annie / Marco</span>
+                                <span class="text-[10px] text-green-600">旺度 +85%</span>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-red-50 rounded-xl border border-red-100">
+                            <div class="text-xs text-red-700 font-bold mb-1">💀 天敵 (剋我)</div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-slate-700">Jack / Haydrian</span>
+                                <span class="text-[10px] text-red-600">煞氣 99%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="glass-card p-4 text-center">
+                        <div class="text-[10px] text-gray-400 font-bold uppercase">總得分</div>
+                        <div class="text-2xl font-black accent-color">+6677</div>
+                    </div>
+                    <div class="glass-card p-4 text-center">
+                        <div class="text-[10px] text-gray-400 font-bold uppercase">對局數</div>
+                        <div class="text-2xl font-black text-slate-700">86</div>
+                    </div>
+                    <div class="glass-card p-4 text-center">
+                        <div class="text-[10px] text-gray-400 font-bold uppercase">勝率</div>
+                        <div class="text-2xl font-black text-green-600">62.8%</div>
+                    </div>
+                    <div class="glass-card p-4 text-center">
+                        <div class="text-[10px] text-gray-400 font-bold uppercase">最高連贏</div>
+                        <div class="text-2xl font-black text-amber-600">8 場</div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6">
+                    <h2 class="text-lg font-bold mb-4 flex items-center justify-between">
+                        📈 戰力趨勢分析
+                        <div class="text-[10px] font-normal text-gray-400">總累積走勢</div>
+                    </h2>
+                    <div class="h-64">
+                        <canvas id="chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 overflow-hidden">
+                    <h2 class="text-lg font-bold mb-4">📜 對局流水帳 (2026 最新)</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="text-gray-400 border-b border-beige-100">
+                                    <th class="pb-3 font-bold">日期</th>
+                                    <th class="pb-3 font-bold">牌型</th>
+                                    <th class="pb-3 font-bold">得分</th>
+                                    <th class="pb-3 text-right">變動</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history" class="divide-y divide-beige-50">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 數據庫整合 (2024-2026)
+        const history2026 = [
+            { d: '8-Apr', t: 'tai', s: 661 }, { d: '5-Apr', t: 'tai', s: -152 }, { d: '4-Apr', t: 'tai', s: 727 }, { d: '25-Mar', t: 'tai', s: 264 }, { d: '20-Mar', t: 'hk', s: 289 }, { d: '11-Mar', t: 'tai', s: -2 }, { d: '10-Mar', t: 'tai', s: 94 }, { d: '6-Mar', t: 'tai', s: -14 }, { d: '1-Mar', t: 'hk', s: 84 }, { d: '31-Jan', t: 'tai', s: 210 }, { d: '27-Jan', t: 'hk', s: -100 }, { d: '24-Jan', t: 'hk', s: -156 }, { d: '23-Jan', t: 'hk', s: 492 }, { d: '17-Jan', t: 'hk', s: -180 }
+        ];
+
+        const prevScores = [68, 272, 4, -44, 88, 84, -64, -28, 28, 188, 800, 800, -148, 192, 248, 32, 188, 356, 172, -176, -152, 104, 36, 52, 376, -128, -344, 96, -108, -116, -64, -272, -188, -84, -224, 36, 32, 420, 4, 276, 60, 416, 292, 416, 572, 72, 316, 288, 68, -72, -476, -72, -168, -212, -240, -216, 124, -80, -112, 472, -196, -212, 60, 764, 44, -52, -80, 248, -60, -316];
+        
+        const fullTimeline = [...prevScores, ...history2026.map(d=>d.s).reverse()];
+        
+        const rankList = [
+            { n: "Ava", p: 6677 }, { n: "Annie", p: 847 }, { n: "Nat", p: 808 }, { n: "Marco", p: 337 }, { n: "Jack", p: -1502 }
+        ].sort((a,b)=>b.p-a.p);
+
+        function init() {
+            // Rankings
+            const rb = document.getElementById('rankings');
+            rankList.forEach((r, i) => {
+                rb.innerHTML += `
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-white/50 border border-transparent">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-black w-5 h-5 flex items-center justify-center rounded bg-slate-100 text-slate-400">${i+1}</span>
+                            <span class="font-bold text-slate-700">${r.n}</span>
+                        </div>
+                        <span class="font-mono font-black ${r.p >= 0 ? 'text-green-600' : 'text-red-500'}">${r.p > 0 ? '+' : ''}${r.p}</span>
+                    </div>
+                `;
+            });
+
+            // History
+            const hb = document.getElementById('history');
+            history2026.forEach(item => {
+                hb.innerHTML += `
+                    <tr class="hover:bg-amber-50/30">
+                        <td class="py-4 text-xs font-bold text-slate-400">${item.d}</td>
+                        <td class="py-4">
+                            <span class="badge ${item.t === 'hk' ? 'badge-hk' : 'badge-tai'}">${item.t === 'hk' ? '廣東牌' : '台牌'}</span>
+                        </td>
+                        <td class="py-4 font-black ${item.s >= 0 ? 'text-green-600' : 'text-red-400'}">${item.s > 0 ? '+' : ''}${item.s}</td>
+                        <td class="py-4 text-right font-mono text-xs">${item.s >= 0 ? '📈' : '📉'}</td>
+                    </tr>
+                `;
+            });
+
+            // Chart
+            let c = 0;
+            const trend = fullTimeline.map(s => c += s);
+            new Chart(document.getElementById('chart'), {
+                type: 'line',
+                data: {
+                    labels: fullTimeline.map((_, i) => i + 1),
+                    datasets: [{
+                        data: trend,
+                        borderColor: '#b08d57',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        tension: 0.3,
+                        fill: true,
+                        backgroundColor: 'rgba(176, 141, 87, 0.05)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { grid: { color: '#efede6' } } }
+                }
+            });
+        }
+        init();
+    </script>
+</body>
+</html>
