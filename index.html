@@ -3,167 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>麻雀龍虎榜 - Ava 數據看板</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Ava 雀王全數據看板</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { background-color: #f6f3eb; color: #403f3c; font-family: 'Inter', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.85); border: 1px solid #e5e0d5; border-radius: 1.5rem; backdrop-filter: blur(10px); }
-        .nav-capsule { background: rgba(229, 224, 213, 0.5); border-radius: 1rem; padding: 4px; display: flex; gap: 4px; }
-        .nav-btn { padding: 6px 16px; border-radius: 0.75rem; font-size: 0.85rem; font-weight: 700; transition: 0.3s; color: #8c8a82; }
-        .nav-btn.active { background: #fff; color: #1a1a1a; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e5e0d5; }
-        .section-content { display: none; }
-        .section-content.active { display: block; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* 名人堂專屬樣式 */
-        .avatar-box { width: 100px; height: 100px; border-radius: 50%; background: #fff; border: 4px solid #f6f3eb; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto 1.5rem; }
-        .metric-grid { display: grid; grid-template-cols: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem; }
-        .metric-item { background: #fafafa; padding: 0.75rem 0.5rem; border-radius: 1rem; border: 1px solid #f0f0f0; }
-        .metric-label { font-size: 9px; font-weight: 800; color: #a19f95; text-transform: uppercase; }
-        .metric-val { font-size: 0.9rem; font-weight: 900; color: #1a1a1a; margin-top: 2px; }
+        body { background-color: #f8f6f0; color: #333; font-family: 'Inter', sans-serif; }
+        .glass-card { background: white; border: 1px solid #e5e0d5; border-radius: 1.25rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.3s; }
+        .nav-btn { padding: 8px 16px; border-radius: 10px; font-weight: 700; color: #888; transition: 0.3s; }
+        .nav-btn.active { background: #1a1a1a; color: #fff; }
+        .year-pill { padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 1px solid #ddd; cursor: pointer; }
+        .year-pill.active { background: #b08d57; color: white; border-color: #b08d57; }
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        #modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     </style>
 </head>
-<body class="p-6 md:p-12">
+<body class="p-4 md:p-8">
 
     <div class="max-w-6xl mx-auto">
         <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 bg-[#1a1a1a] text-white flex items-center justify-center rounded-2xl font-black text-2xl italic">🀄</div>
-                <div><h1 class="text-3xl font-black tracking-tighter">麻雀龍虎榜</h1><p class="text-[11px] font-bold text-[#b08d57] uppercase tracking-[0.3em]">Ava's Scientific Stats</p></div>
+            <div>
+                <h1 class="text-3xl font-black italic tracking-tighter text-slate-800">AVA MJ DATABASE</h1>
+                <p class="text-[10px] font-bold text-amber-700 tracking-[0.3em] uppercase opacity-70">2024 - 2026 Archive</p>
             </div>
-            <nav class="nav-capsule">
-                <button class="nav-btn active" id="tab-home" onclick="navTo('home')">龍虎榜</button>
-                <button class="nav-btn" id="tab-hall" onclick="navTo('hall')">名人堂</button>
-                <button class="nav-btn" id="tab-me" onclick="navTo('me')">個人戰績</button>
+            <nav class="flex gap-2 p-1 bg-gray-200/50 rounded-2xl border border-gray-200">
+                <button class="nav-btn active" onclick="showPage('rank', this)">龍虎榜</button>
+                <button class="nav-btn" onclick="showPage('hall', this)">名人堂</button>
+                <button class="nav-btn" onclick="showPage('me', this)">個人戰績</button>
+                <button class="nav-btn" onclick="showPage('log', this)">流水帳</button>
             </nav>
+            <button onclick="openModal()" class="bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-xl hover:scale-105 active:scale-95 transition-all">+ 新對局</button>
         </header>
 
-        <div id="page-home" class="section-content active">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div class="lg:col-span-4 space-y-8">
-                    <div class="glass-card p-7 shadow-sm">
-                        <h2 class="text-xl font-black mb-6 tracking-tight">🏆 總體排名</h2>
-                        <div id="rankingList" class="space-y-4"></div>
-                    </div>
-                    <div class="glass-card p-7 border-l-[6px] border-[#b08d57]">
-                        <h2 class="text-xl font-black mb-1">🔮 牌局玄學</h2>
-                        <div id="mysteryBox" class="space-y-5 mt-6">
-                            <div class="bg-white/50 p-4 rounded-2xl border border-[#e5e0d5]">
-                                <span class="text-[10px] font-black text-green-600 uppercase">✨ 貴人 (旺我)</span>
-                                <p class="text-lg font-black mt-1">Annie / Marco</p>
-                            </div>
-                            <div class="bg-white/50 p-4 rounded-2xl border border-[#e5e0d5]">
-                                <span class="text-[10px] font-black text-red-500 uppercase">💀 天敵 (剋我)</span>
-                                <p class="text-lg font-black mt-1">Jack / Haydrian</p>
-                            </div>
-                        </div>
+        <section id="rank" class="page-section active">
+            <div class="glass-card p-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <h2 class="text-2xl font-black tracking-tight">🏆 年度英雄榜</h2>
+                    <div class="flex gap-2">
+                        <span class="year-pill active" onclick="filterRank(2026, this)">2026</span>
+                        <span class="year-pill" onclick="filterRank(2025, this)">2025</span>
+                        <span class="year-pill" onclick="filterRank(2024, this)">2024</span>
                     </div>
                 </div>
-                <div class="lg:col-span-8 space-y-8">
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="glass-card p-6 text-center"><p class="text-[10px] font-extrabold text-gray-400 uppercase">總得分</p><p class="text-2xl font-black text-[#b08d57]">+6677</p></div>
-                        <div class="glass-card p-6 text-center"><p class="text-[10px] font-extrabold text-gray-400 uppercase">勝率</p><p class="text-2xl font-black">63%</p></div>
-                        <div class="glass-card p-6 text-center"><p class="text-[10px] font-extrabold text-gray-400 uppercase">對局</p><p class="text-2xl font-black">86</p></div>
-                        <div class="glass-card p-6 text-center"><p class="text-[10px] font-extrabold text-gray-400 uppercase">狀態</p><p class="text-2xl font-black text-green-600">🔥 巔峰</p></div>
+                <div id="rankContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+
+        <section id="hall" class="page-section">
+            <h2 class="text-3xl font-black mb-8 text-center italic text-slate-800">雀館名人堂</h2>
+            <div id="hallContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </section>
+
+        <section id="me" class="page-section">
+            <div class="flex gap-2 mb-8">
+                <span class="year-pill active" onclick="filterMe(2026, this)">2026</span>
+                <span class="year-pill" onclick="filterMe(2025, this)">2025</span>
+                <span class="year-pill" onclick="filterMe(2024, this)">2024</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="glass-card p-8 border-t-8 border-amber-600">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">年度盈虧</p>
+                        <p id="meScore" class="text-5xl font-black my-2">+2217</p>
+                        <p class="text-xs font-bold text-gray-400">對戰場數: <span id="meCount" class="text-slate-800">14</span></p>
                     </div>
                     <div class="glass-card p-8">
-                        <h2 class="text-xl font-black mb-6 tracking-tight">📈 戰力激鬥曲線</h2>
-                        <div class="h-[300px] w-full"><canvas id="mainChart"></canvas></div>
+                        <h3 class="font-black text-lg mb-6 flex items-center justify-between">🔮 <span id="mysteryYear">2026</span> 玄學</h3>
+                        <div class="space-y-4" id="mysteryContent"></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-8 space-y-6">
+                    <div class="glass-card p-8">
+                        <h3 class="font-black text-lg mb-6 flex justify-between items-center">📈 戰力激鬥曲線</h3>
+                        <div class="h-[250px] w-full"><canvas id="meChart"></canvas></div>
+                    </div>
+                    <div class="glass-card p-8">
+                        <h3 class="font-black text-lg mb-6">🀄 牌型戰績分析</h3>
+                        <div id="typeAnalysis" class="divide-y divide-gray-100"></div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="page-hall" class="section-content">
-            <div class="mb-10 text-center">
-                <h2 class="text-4xl font-black text-[#1a1a1a] mb-2 tracking-tighter">名人堂</h2>
-                <p class="text-[#b08d57] font-bold tracking-[0.3em] uppercase text-xs">Hall of Fame Records</p>
+        <section id="log" class="page-section">
+            <div class="glass-card overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-50 text-gray-400 border-b">
+                        <tr><th class="p-5 font-bold">日期</th><th class="p-5 font-bold">地點/牌型</th><th class="p-5 text-right font-bold">得分</th></tr>
+                    </thead>
+                    <tbody id="logTable" class="divide-y divide-gray-50"></tbody>
+                </table>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="glass-card p-8 text-center border-t-8 border-amber-400">
-                    <div class="avatar-box shadow-sm">👑</div>
-                    <h3 class="text-2xl font-black text-[#1a1a1a]">Ava</h3>
-                    <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest mt-1 italic">Ultimate Winner</p>
-                    <div class="metric-grid">
-                        <div class="metric-item"><p class="metric-label">勝率</p><p class="metric-val text-green-600">62.8%</p></div>
-                        <div class="metric-item"><p class="metric-label">最高</p><p class="metric-val">+800</p></div>
-                        <div class="metric-item"><p class="metric-label">出席</p><p class="metric-val">100%</p></div>
-                    </div>
-                </div>
+        </section>
+    </div>
 
-                <div class="glass-card p-8 text-center border-t-8 border-slate-300">
-                    <div class="avatar-box shadow-sm">👩🏻‍🎨</div>
-                    <h3 class="text-2xl font-black text-[#1a1a1a]">Annie</h3>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Steady Force</p>
-                    <div class="metric-grid">
-                        <div class="metric-item"><p class="metric-label">勝率</p><p class="metric-val text-green-600">54.2%</p></div>
-                        <div class="metric-item"><p class="metric-label">最高</p><p class="metric-val">+472</p></div>
-                        <div class="metric-item"><p class="metric-label">出席</p><p class="metric-val">85.0%</p></div>
-                    </div>
+    <div id="modal">
+        <div class="bg-white p-8 rounded-3xl w-full max-w-lg shadow-2xl mx-4">
+            <h2 class="text-2xl font-black mb-6">新增對局紀錄</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-6">
+                <div><label class="font-bold text-gray-400 uppercase text-[10px]">日期</label><input id="fDate" type="date" class="w-full border-2 border-gray-100 p-3 rounded-xl mt-1"></div>
+                <div>
+                    <label class="font-bold text-gray-400 uppercase text-[10px]">牌型</label>
+                    <select id="fType" class="w-full border-2 border-gray-100 p-3 rounded-xl mt-1 font-bold">
+                        <option>港式台牌</option><option>廣東牌</option>
+                    </select>
                 </div>
-
-                <div class="glass-card p-8 text-center border-t-8 border-orange-200">
-                    <div class="avatar-box shadow-sm">🕶️</div>
-                    <h3 class="text-2xl font-black text-[#1a1a1a]">Nat</h3>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Key Rival</p>
-                    <div class="metric-grid">
-                        <div class="metric-item"><p class="metric-label">勝率</p><p class="metric-val text-green-600">48.5%</p></div>
-                        <div class="metric-item"><p class="metric-label">最高</p><p class="metric-val">+668</p></div>
-                        <div class="metric-item"><p class="metric-label">出席</p><p class="metric-val">72.1%</p></div>
-                    </div>
-                </div>
+                <div class="md:col-span-2"><label class="font-bold text-gray-400 uppercase text-[10px]">地點</label><input id="fLoc" type="text" class="w-full border-2 border-gray-100 p-3 rounded-xl mt-1" placeholder="例如: 旺角"></div>
             </div>
-        </div>
-
-        <div id="page-me" class="section-content">
-            <div class="glass-card p-8">
-                <h2 class="text-2xl font-black mb-8">📜 2026 近期流水帳</h2>
-                <div class="overflow-x-auto"><table class="w-full text-left"><tbody id="historyTable" class="divide-y divide-[#f0ede6]"></tbody></table></div>
+            <div class="grid grid-cols-2 gap-3 mb-8 text-sm">
+                <input type="text" value="Ava" class="border p-3 rounded-xl bg-gray-50 font-bold" readonly><input id="s1" type="number" placeholder="得分" class="border p-3 rounded-xl">
+                <input id="p2" type="text" placeholder="玩家2" class="border p-3 rounded-xl"><input id="s2" type="number" placeholder="得分" class="border p-3 rounded-xl">
+                <input id="p3" type="text" placeholder="玩家3" class="border p-3 rounded-xl"><input id="s3" type="number" placeholder="得分" class="border p-3 rounded-xl">
+                <input id="p4" type="text" placeholder="玩家4" class="border p-3 rounded-xl"><input id="s4" type="number" placeholder="得分" class="border p-3 rounded-xl">
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 p-4 bg-gray-100 font-bold rounded-2xl">取消</button>
+                <button onclick="saveMatch()" class="flex-1 p-4 bg-slate-800 text-white font-bold rounded-2xl">儲存紀錄</button>
             </div>
         </div>
     </div>
 
     <script>
-        function navTo(id) {
-            document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+        let myChart = null;
+        const MJ_DB = {
+            rank: {
+                2026: [{n:'Ava',g:14,w:63,s:2217}, {n:'Annie',g:10,w:50,s:450}, {n:'Jack',g:14,w:21,s:-800}, {n:'Marco',g:8,w:45,s:337}],
+                2025: [{n:'Ava',g:42,w:58,s:3120}, {n:'Nat',g:30,w:52,s:1200}, {n:'Winnie',g:15,w:40,s:100}],
+                2024: [{n:'Ava',g:30,w:60,s:1340}, {n:'Carissa',g:12,w:55,s:800}, {n:'Tony',g:15,w:50,s:400}]
+            },
+            hall: [
+                {n:'Ava',e:'👑',t:'終極雀王',w:62.8,h:800,l:-250,v:86},
+                {n:'Annie',e:'👩🏻‍🎨',t:'穩定輸出',w:54.2,h:472,l:-180,v:65},
+                {n:'Nat',e:'🕶️',t:'戰鬥民族',w:48.5,h:668,l:-340,v:72},
+                {n:'Jack',e:'💸',t:'交租代表',w:28.4,h:120,l:-800,v:92}
+            ],
+            me: {
+                2026: {s:2217,g:14,l:['Annie','Marco','Carissa'], e:['Jack','Haydrian','Soddy'], types:[{t:'港式台牌',s:1234},{t:'廣東牌',s:983}], chart:[200, 600, 450, 900, 1100, 1500, 2217]},
+                2025: {s:3120,g:42,l:['Nat','Winnie','Tony'], e:['Charles','Irene'], types:[{t:'港式台牌',s:1500},{t:'廣東牌',s:1620}], chart:[100, 400, 800, 1200, 2000, 2600, 3120]},
+                2024: {s:1340,g:30,l:['Carissa','Tony'], e:['Eva','Jack'], types:[{t:'港式台牌',s:800},{t:'廣東牌',s:540}], chart:[50, 200, 150, 400, 700, 1000, 1340]}
+            },
+            log: [{d:'2026-04-08',l:'旺角',t:'港式台牌',s:661}, {d:'2026-04-05',l:'銅鑼灣',t:'港式台牌',s:-152}]
+        };
+
+        function showPage(id, btn) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('page-' + id).classList.add('active');
-            document.getElementById('tab-' + id).classList.add('active');
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
         }
 
-        const raw2026 = [{d:'8-Apr',t:'tai',s:661},{d:'5-Apr',t:'tai',s:-152},{d:'4-Apr',t:'tai',s:727},{d:'25-Mar',t:'tai',s:264},{d:'20-Mar',t:'hk',s:289},{d:'11-Mar',t:'tai',s:-2},{d:'10-Mar',t:'tai',s:94},{d:'6-Mar',t:'tai',s:-14},{d:'1-Mar',t:'hk',s:84},{d:'31-Jan',t:'tai',s:210},{d:'27-Jan',t:'hk',s:-100},{d:'24-Jan',t:'hk',s:-156},{d:'23-Jan',t:'hk',s:492},{d:'17-Jan',t:'hk',s:-180}];
-        const sOld = [68, 272, 4, -44, 88, 84, -64, -28, 28, 188, 800, 800, -148, 192, 248, 32, 188, 356, 172, -176, -152, 104, 36, 52, 376, -128, -344, 96, -108, -116, -64, -272, -188, -84, -224, 36, 32, 420, 4, 276, 60, 416, 292, 416, 572, 72, 316, 288, 68, -72, -476, -72, -168, -212, -240, -216, 124, -80, -112, 472, -196, -212, 60, 764, 44, -52, -80, 248, -60, -316];
-        const fullData = [...sOld, ...raw2026.map(x=>x.s).reverse()];
-        const ranks = [{n:"Ava",p:6677},{n:"Annie",p:847},{n:"Nat",p:808},{n:"Marco",p:337},{n:"Jack",p:-1502}];
-
-        window.onload = () => {
-            const rList = document.getElementById('rankingList');
-            rList.innerHTML = ranks.map((r, i) => `
-                <div class="flex justify-between items-center p-4 rounded-2xl bg-white/40 border border-transparent hover:border-[#e5e0d5] transition-all">
-                    <div class="flex items-center gap-4"><span class="w-6 text-[11px] font-black text-gray-400">0${i+1}</span><span class="font-bold text-[#1a1a1a]">${r.n}</span></div>
-                    <span class="font-mono font-black ${r.p>=0?'text-green-600':'text-red-500'}">${r.p>0?'+':''}${r.p}</span>
-                </div>
-            `).join('');
-
-            const hTable = document.getElementById('historyTable');
-            hTable.innerHTML = raw2026.map(i => `
-                <tr><td class="py-5 text-xs font-bold text-gray-400">${i.d}</td><td class="py-5"><span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase ${i.t==='hk'?'bg-blue-100 text-blue-700':'bg-red-100 text-red-700'}">${i.t==='hk'?'廣東':'台牌'}</span></td><td class="py-5 text-right font-black ${i.s>=0?'text-green-600':'text-red-500'}">${i.s>0?'+':''}${i.s}</td></tr>
-            `).join('');
-
-            const ctx = document.getElementById('mainChart').getContext('2d');
-            let cur = 0; const trend = fullData.map(s => cur += s);
-            new Chart(ctx, {
+        function updateChart(data) {
+            const ctx = document.getElementById('meChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: fullData.map((_,i)=>i),
-                    datasets: [{ data: trend, borderColor: '#b08d57', borderWidth: 4, pointRadius: 0, tension: 0.4, fill: true, backgroundColor: 'rgba(176, 141, 87, 0.1)' }]
+                    labels: data.map((_, i) => i + 1),
+                    datasets: [{
+                        data: data, borderColor: '#b08d57', borderWidth: 4, pointRadius: 0, tension: 0.4, fill: true, backgroundColor: 'rgba(176, 141, 87, 0.1)'
+                    }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: '#efede6' } } } }
             });
-        };
+        }
+
+        function filterRank(year, btn) {
+            document.querySelectorAll('#rank .year-pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            const cont = document.getElementById('rankContainer');
+            cont.innerHTML = MJ_DB.rank[year].map(r => `
+                <div class="flex justify-between items-center p-5 bg-gray-50 rounded-2xl hover:bg-amber-50 transition-colors">
+                    <span class="font-bold">${r.n}</span>
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">${r.g}場 • ${r.w}%</p>
+                        <p class="font-black ${r.s>=0?'text-green-600':'text-red-500'}">${r.s>0?'+':''}${r.s}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterMe(year, btn) {
+            document.querySelectorAll('#me .year-pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            const data = MJ_DB.me[year];
+            document.getElementById('meScore').innerText = (data.s >= 0 ? '+' : '') + data.s;
+            document.getElementById('meCount').innerText = data.g;
+            document.getElementById('mysteryYear').innerText = year;
+            document.getElementById('mysteryContent').innerHTML = `
+                <div class="p-4 bg-green-50 rounded-2xl mb-3"><p class="text-[10px] font-black text-green-600 uppercase mb-1">✨ 貴人 (旺我)</p><p class="font-bold text-slate-700">${data.l.join(' / ')}</p></div>
+                <div class="p-4 bg-red-50 rounded-2xl"><p class="text-[10px] font-black text-red-600 uppercase mb-1">💀 天敵 (剋我)</p><p class="font-bold text-slate-700">${data.e.join(' / ')}</p></div>
+            `;
+            document.getElementById('typeAnalysis').innerHTML = data.types.map(t => `
+                <div class="flex justify-between items-center py-4"><span class="font-bold text-slate-600">🀄 ${t.t}</span><span class="font-black ${t.s >= 0 ? 'text-green-600' : 'text-red-500'}">${t.s > 0 ? '+' : ''}${t.s}</span></div>
+            `).join('');
+            updateChart(data.chart);
+        }
+
+        function initHall() {
+            document.getElementById('hallContainer').innerHTML = MJ_DB.hall.map(h => `
+                <div class="glass-card p-6 text-center group hover:-translate-y-1">
+                    <div class="text-5xl mb-3">${h.e}</div>
+                    <h3 class="font-black text-xl">${h.n}</h3>
+                    <p class="text-[10px] font-black text-amber-600 mb-4 uppercase tracking-widest">${h.t}</p>
+                    <div class="grid grid-cols-1 gap-1 text-[10px] font-black uppercase text-left">
+                        <div class="flex justify-between p-2 bg-gray-50 rounded"><span>勝率</span><span>${h.w}%</span></div>
+                        <div class="flex justify-between p-2 bg-green-50 text-green-700 rounded"><span>最高 WIN</span><span>+${h.h}</span></div>
+                        <div class="flex justify-between p-2 bg-red-50 text-red-700 rounded"><span>最慘 LOSE</span><span>${h.l}</span></div>
+                        <div class="flex justify-between p-2 bg-gray-50 rounded"><span>總出席</span><span>${h.v}場</span></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initLog() {
+            document.getElementById('logTable').innerHTML = MJ_DB.log.map(l => `
+                <tr class="border-b hover:bg-gray-50 transition-colors"><td class="p-5 font-bold text-gray-400">${l.d.slice(5)}</td><td class="p-5"><p class="font-bold text-slate-700">${l.l}</p><p class="text-[10px] font-bold text-gray-400 uppercase">${l.t}</p></td><td class="p-5 text-right font-black text-lg ${l.s>=0?'text-green-600':'text-red-500'}">${l.s>0?'+':''}${l.s}</td></tr>
+            `).join('');
+        }
+
+        function openModal() { document.getElementById('modal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        function saveMatch() {
+            const entry = { d: document.getElementById('fDate').value || '2026-04-14', l: document.getElementById('fLoc').value || '未知地點', t: document.getElementById('fType').value, s: parseInt(document.getElementById('s1').value) || 0 };
+            MJ_DB.log.unshift(entry); initLog(); closeModal();
+        }
+
+        window.onload = () => { filterRank(2026, document.querySelector('#rank .year-pill')); initHall(); filterMe(2026, document.querySelector('#me .year-pill')); initLog(); };
     </script>
 </body>
 </html>
