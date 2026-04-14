@@ -14,17 +14,12 @@
         .nav-btn { padding: 12px 24px; border-radius: 12px; color: white; font-weight: 900; cursor: pointer; transition: 0.3s; }
         .nav-btn.active { background: var(--mj-tile); color: var(--mj-green); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .tile-card { background: var(--mj-tile); border-bottom: 5px solid #d1d5db; border-right: 5px solid #d1d5db; border-radius: 12px; }
-        
-        /* 龍虎榜 Layout */
         .rank-row { border-left: 8px solid transparent; transition: 0.2s; }
         .rank-1 { border-left-color: #fbbf24; background: linear-gradient(90deg, #fef3c7, transparent); }
         .rank-2 { border-left-color: #94a3b8; background: linear-gradient(90deg, #f1f5f9, transparent); }
         .rank-3 { border-left-color: #d97706; background: linear-gradient(90deg, #ffedd5, transparent); }
-        
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        
-        /* 頭像選擇器 */
         .avatar-picker { cursor: pointer; transition: transform 0.2s; }
         .avatar-picker:hover { transform: scale(1.1); }
     </style>
@@ -52,14 +47,12 @@
                 <button class="px-5 py-2 rounded-full bg-emerald-800 text-white font-black text-sm" onclick="updateRank('2024')">2024</button>
             </div>
             <div class="tile-card bg-white overflow-hidden">
-                <div id="rankContainer" class="divide-y divide-gray-100">
-                    </div>
+                <div id="rankContainer" class="divide-y divide-gray-100"></div>
             </div>
         </div>
 
         <div id="tab2" class="tab-content">
-            <div id="hallGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
+            <div id="hallGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
         <div id="tab3" class="tab-content">
@@ -74,21 +67,12 @@
                         <div class="space-y-4 text-sm">
                             <div>
                                 <p class="text-emerald-600 font-black mb-1">最旺貴人 (同場贏最多)</p>
-                                <p class="font-bold">1. Haydrian (+2204) / 2. Annie (+847) / 3. Nat (+444)</p>
+                                <p class="font-bold">1. Haydrian / 2. Annie / 3. Nat</p>
                             </div>
                             <div>
                                 <p class="text-red-600 font-black mb-1">剋星天敵 (同場輸最多)</p>
-                                <p class="font-bold">1. Jack (-1502) / 2. Emily (-1015) / 3. Yanyi (-1011)</p>
+                                <p class="font-bold">1. Jack / 2. Emily / 3. Yanyi</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="tile-card p-6 bg-white">
-                        <h3 class="font-black text-emerald-900 mb-4 border-b pb-2">🀄 玩法盈虧</h3>
-                        <div class="flex justify-between font-bold">
-                            <span>港式台牌</span><span class="text-emerald-600">+6249</span>
-                        </div>
-                        <div class="flex justify-between font-bold mt-2">
-                            <span>廣東牌</span><span class="text-emerald-600">+428</span>
                         </div>
                     </div>
                 </div>
@@ -108,49 +92,25 @@
                             <th class="p-4 text-right">戰果</th>
                         </tr>
                     </thead>
-                    <tbody id="logList" class="divide-y divide-gray-50 font-bold text-sm">
-                        </tbody>
+                    <tbody id="logList" class="divide-y divide-gray-50 font-bold text-sm"></tbody>
                 </table>
             </div>
         </div>
 
         <div id="tab5" class="tab-content">
-            <div class="max-w-xl mx-auto tile-card p-8 bg-white">
-                <h3 class="text-2xl font-black mb-6">入數</h3>
-                <div class="space-y-4">
-                    <input type="date" id="inDate" class="w-full p-3 border-2 rounded-xl font-bold">
-                    <select id="inType" class="w-full p-3 border-2 rounded-xl font-bold">
-                        <option>港式台牌</option><option>廣東牌</option>
-                    </select>
-                    <div id="inPlayers" class="space-y-2">
-                        <div class="flex gap-2"><input type="text" placeholder="玩家" class="w-2/3 p-3 border-2 rounded-xl"><input type="number" placeholder="得分" class="w-1/3 p-3 border-2 rounded-xl"></div>
-                    </div>
-                    <button class="w-full bg-emerald-900 text-white p-4 rounded-xl font-black" onclick="alert('更新成功！')">💾 儲存紀錄</button>
-                </div>
+            <div class="max-w-xl mx-auto tile-card p-8 bg-white text-center font-black">
+                <p>請手動更新 Excel 並重新載入以同步最新數據</p>
             </div>
         </div>
     </div>
 
     <script>
-        // 核心數據
         const DATA = {
-            players: [
-                {name: "Ava", sum: 6677, games: 84, winRate: 57, max: 800, icon: "👑", title: "雀壇傳奇"},
-                {name: "Annie", sum: 847, games: 5, winRate: 40, max: 384, icon: "🔥", title: "火力全開"},
-                {name: "Nat", sum: 444, games: 5, winRate: 60, max: 668, icon: "🕶️", title: "冷面笑匠"},
-                {name: "Carissa", sum: 133, games: 54, winRate: 48, max: 500, icon: "🐱", title: "穩健派"},
-                {name: "Haydrian", sum: -723, games: 75, winRate: 48, max: 736, icon: "💸", title: "大慈善家"},
-                {name: "Jack", sum: -1502, games: 54, winRate: 40, max: 460, icon: "🤡", title: "送財童子"},
-                {name: "Yanyi", sum: -1011, games: 16, winRate: 31, max: 196, icon: "🎲", title: "運氣一般"}
-            ],
-            logs: [
-                {d: "2026-04-08", t: "港式台牌", s: 661}, {d: "2026-04-05", t: "港式台牌", s: -152},
-                {d: "2026-04-04", t: "港式台牌", s: 727}, {d: "2026-03-25", t: "港式台牌", s: 264},
-                {d: "2026-03-20", t: "港式台牌", s: 289}, {d: "2025-12-24", t: "廣東牌", s: 84}
-            ]
+            players: [{"name": "Ava", "sum": 6677, "games": 84, "winRate": 57.1, "max": 800, "icon": "👑", "title": "雀壇傳奇", "yearly": {"2024": 472, "2025": 3988, "2026": 2217}}, {"name": "Annie", "sum": 847, "games": 5, "winRate": 40.0, "max": 1032, "icon": "🔥", "title": "火力全開", "yearly": {"2024": 384, "2025": 516, "2026": -53}}, {"name": "Charles", "sum": 292, "games": 3, "winRate": 100.0, "max": 220, "icon": "💎", "title": "鑽石玩家", "yearly": {"2024": 268, "2025": 0, "2026": 24}}, {"name": "Nat", "sum": 444, "games": 5, "winRate": 60.0, "max": 668, "icon": "🕶️", "title": "冷面笑匠", "yearly": {"2024": 40, "2025": 0, "2026": 404}}, {"name": "Wadee", "sum": -100, "games": 2, "winRate": 0.0, "max": 0, "icon": "🌊", "title": "隨風而去", "yearly": {"2024": -32, "2025": 0, "2026": -68}}, {"name": "Yanyi", "sum": -1011, "games": 13, "winRate": 38.5, "max": 196, "icon": "🎲", "title": "運氣一般", "yearly": {"2024": -40, "2025": 0, "2026": -971}}, {"name": "Lailo", "sum": -256, "games": 1, "winRate": 0.0, "max": 0, "icon": "💀", "title": "遺憾離場", "yearly": {"2024": -256, "2025": 0, "2026": 0}}, {"name": "Karis", "sum": -596, "games": 4, "winRate": 25.0, "max": 188, "icon": "🕊️", "title": "和平主義", "yearly": {"2024": -148, "2025": -352, "2026": -96}}, {"name": "Haydrian", "sum": -723, "games": 77, "winRate": 48.1, "max": 736, "icon": "💸", "title": "大慈善家", "yearly": {"2024": -320, "2025": -228, "2026": -175}}, {"name": "Tina", "sum": -1412, "games": 5, "winRate": 0.0, "max": 0, "icon": "📉", "title": "需要努力", "yearly": {"2024": -368, "2025": -692, "2026": -352}}, {"name": "Marco", "sum": 73, "games": 4, "winRate": 50.0, "max": 364, "icon": "🦁", "title": "實力派", "yearly": {"2024": 0, "2025": 488, "2026": -264}}, {"name": "Carissa", "sum": 133, "games": 54, "winRate": 48.1, "max": 892, "icon": "🐱", "title": "穩健派", "yearly": {"2024": 0, "2025": 440, "2026": -307}}, {"name": "Tony", "sum": 344, "games": 2, "winRate": 100.0, "max": 188, "icon": "💪", "title": "硬漢子", "yearly": {"2024": 0, "2025": 188, "2026": 156}}, {"name": "Irene", "sum": 180, "games": 1, "winRate": 100.0, "max": 180, "icon": "⭐", "title": "閃亮新星", "yearly": {"2024": 0, "2025": 180, "2026": 0}}, {"name": "Eva", "sum": 160, "games": 1, "winRate": 100.0, "max": 160, "icon": "✨", "title": "精準出擊", "yearly": {"2024": 0, "2025": 160, "2026": 0}}, {"name": "Andy", "sum": 120, "games": 1, "winRate": 100.0, "max": 120, "icon": "⚡", "title": "雷霆手", "yearly": {"2024": 0, "2025": 120, "2026": 0}}, {"name": "Winnie", "sum": 32, "games": 1, "winRate": 100.0, "max": 32, "icon": "🎀", "title": "優雅勝出", "yearly": {"2024": 0, "2025": 32, "2026": 0}}, {"name": "Jayden", "sum": 24, "games": 1, "winRate": 100.0, "max": 24, "icon": "🚀", "title": "新秀", "yearly": {"2024": 0, "2025": 24, "2026": 0}}, {"name": "Bobo", "sum": -32, "games": 1, "winRate": 0.0, "max": 0, "icon": "🎈", "title": "重志參與", "yearly": {"2024": 0, "2025": -32, "2026": 0}}, {"name": "Kit", "sum": -112, "games": 2, "winRate": 50.0, "max": 48, "icon": "🔧", "title": "修煉中", "yearly": {"2024": 0, "2025": -112, "2026": 0}}, {"name": "Gut", "sum": -204, "games": 12, "winRate": 50.0, "max": 272, "icon": "🍖", "title": "食家", "yearly": {"2024": 0, "2025": -204, "2026": 0}}, {"name": "Cathy", "sum": -296, "games": 1, "winRate": 0.0, "max": 0, "icon": "☕", "title": "享受過程", "yearly": {"2024": 0, "2025": -296, "2026": 0}}, {"name": "Kyros", "sum": -388, "games": 2, "winRate": 50.0, "max": 112, "icon": "🔍", "title": "觀察者", "yearly": {"2024": 0, "2025": -388, "2026": 0}}, {"name": "Heidi", "sum": -400, "games": 1, "winRate": 0.0, "max": 0, "icon": "🏔️", "title": "高山仰止", "yearly": {"2024": 0, "2025": -400, "2026": 0}}, {"name": "Colbert", "sum": -432, "games": 1, "winRate": 0.0, "max": 0, "icon": "👔", "title": "大方得體", "yearly": {"2024": 0, "2025": -432, "2026": 0}}, {"name": "Soddy", "sum": -564, "games": 2, "winRate": 0.0, "max": 0, "icon": "🥤", "title": "佛系", "yearly": {"2024": 0, "2025": -564, "2026": 0}}, {"name": "Emily", "sum": -1015, "games": 7, "winRate": 42.9, "max": 192, "icon": "🌸", "title": "櫻花雨", "yearly": {"2024": 0, "2025": -568, "2026": -500}}, {"name": "Don", "sum": -584, "games": 3, "winRate": 33.3, "max": 244, "icon": "🎩", "title": "紳士", "yearly": {"2024": 0, "2025": -584, "2026": 0}}, {"name": "Jack", "sum": -1502, "games": 54, "winRate": 40.7, "max": 612, "icon": "🤡", "title": "送財童子", "yearly": {"2024": 0, "2025": -1284, "2026": -218}}, {"name": "Sunho", "sum": 367, "games": 1, "winRate": 100.0, "max": 367, "icon": "🦁", "title": "一戰成名", "yearly": {"2024": 0, "2025": 0, "2026": 367}}, {"name": "Harry", "sum": 296, "games": 2, "winRate": 50.0, "max": 452, "icon": "🦊", "title": "森林之王", "yearly": {"2024": 0, "2025": 0, "2026": 296}}, {"name": "Joe", "sum": 180, "games": 1, "winRate": 100.0, "max": 180, "icon": "🍀", "title": "幸運星", "yearly": {"2024": 0, "2025": 0, "2026": 180}}, {"name": "Joey", "sum": -14, "games": 1, "winRate": 0.0, "max": 0, "icon": "🐨", "title": "見習生", "yearly": {"2024": 0, "2025": 0, "2026": -14}}, {"name": "Stephy", "sum": -20, "games": 1, "winRate": 0.0, "max": 0, "icon": "👠", "title": "步步為營", "yearly": {"2024": 0, "2025": 0, "2026": -20}}, {"name": "Onon", "sum": -508, "games": 3, "winRate": 33.3, "max": 112, "icon": "🐢", "title": "慢慢來", "yearly": {"2024": 0, "2025": 0, "2026": -508}}],
+            logs: [{"d": "2025-02-17", "s": -64}, {"d": "2025-02-24", "s": -28}, {"d": "2025-03-24", "s": 28}, {"d": "2025-03-29", "s": 188}, {"d": "2025-04-05", "s": 800}, {"d": "2025-04-12", "s": 800}, {"d": "2025-04-18", "s": -148}, {"d": "2025-04-27", "s": 192}, {"d": "2025-05-03", "s": 248}, {"d": "2025-05-04", "s": 32}, {"d": "2025-05-09", "s": 188}, {"d": "2025-05-18", "s": 356}, {"d": "2025-05-21", "s": 172}, {"d": "2025-05-31", "s": -176}, {"d": "2025-06-08", "s": -152}, {"d": "2025-06-12", "s": 104}, {"d": "2025-06-14", "s": 36}, {"d": "2025-06-25", "s": 52}, {"d": "2025-06-28", "s": 376}, {"d": "2025-06-30", "s": -128}, {"d": "2025-07-02", "s": -344}, {"d": "2025-07-12", "s": 96}, {"d": "2025-07-21", "s": -108}, {"d": "2025-08-09", "s": -116}, {"d": "2025-08-10", "s": -64}, {"d": "2025-08-15", "s": -272}, {"d": "2025-08-16", "s": -188}, {"d": "2025-08-17", "s": -84}, {"d": "2025-08-21", "s": -224}, {"d": "2025-08-23", "s": 36}, {"d": "2025-08-30", "s": 32}, {"d": "2025-08-31", "s": 420}, {"d": "2025-09-01", "s": 4}, {"d": "2025-09-03", "s": 276}, {"d": "2025-09-07", "s": 60}, {"d": "2025-09-18", "s": 416}, {"d": "2025-09-21", "s": 292}, {"d": "2025-09-21.1", "s": 416}, {"d": "2025-09-23", "s": 572}, {"d": "2025-09-25", "s": 72}, {"d": "2025-10-11", "s": 316}, {"d": "2025-10-21", "s": 288}, {"d": "2025-10-31", "s": 68}, {"d": "2025-11-01", "s": -72}, {"d": "2025-11-02", "s": -476}, {"d": "2025-11-19", "s": -72}, {"d": "2025-11-26", "s": -168}, {"d": "2025-11-27", "s": 68}, {"d": "2025-12-01", "s": -212}, {"d": "2025-12-03", "s": -240}, {"d": "2025-12-04", "s": -216}, {"d": "2025-12-05", "s": 272}, {"d": "2025-12-06", "s": 4}, {"d": "2025-12-06", "s": 124}, {"d": "2025-12-13", "s": -80}, {"d": "2025-12-14", "s": -112}, {"d": "2025-12-14.1", "s": 472}, {"d": "2025-12-16", "s": -196}, {"d": "2025-12-17", "s": -212}, {"d": "2025-12-18", "s": 60}, {"d": "2025-12-21", "s": -44}, {"d": "2025-12-21", "s": 764}, {"d": "2025-12-23", "s": 88}, {"d": "2025-12-24", "s": 84}, {"d": "2025-12-24", "s": 44}, {"d": "2025-12-26", "s": -52}, {"d": "2025-12-27", "s": -80}, {"d": "2025-12-28", "s": 248}, {"d": "2025-12-29", "s": -60}, {"d": "2026-01-17", "s": -180}, {"d": "2026-01-23", "s": 492}, {"d": "2026-01-24", "s": -156}, {"d": "2026-01-27", "s": -100}, {"d": "2026-01-31", "s": 210}, {"d": "2026-03-01", "s": 84}, {"d": "2026-03-06", "s": -14}, {"d": "2026-03-10", "s": 94}, {"d": "2026-03-11", "s": -2}, {"d": "2026-03-20", "s": 289}, {"d": "2026-03-25", "s": 264}, {"d": "2026-04-04", "s": 727}, {"d": "2026-04-05", "s": -152}, {"d": "2026-04-08", "s": 661}, {"d": "2026-12-30", "s": -316}]
         };
 
-        const emojis = ["👑", "🔥", "🕶️", "🐱", "💸", "🤡", "🎲", "🦊", "🦁", "🐼"];
+        const emojis = ["👑", "🔥", "🕶️", "🐱", "💸", "🤡", "🎲", "🦊", "🦁", "🐼", "💪", "⚡", "✨", "🎀", "🎩", "🌸"];
 
         function switchTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -162,19 +122,25 @@
 
         function updateRank(year) {
             const container = document.getElementById('rankContainer');
-            let sorted = [...DATA.players].sort((a,b) => b.sum - a.sum);
+            let sorted = [...DATA.players].map(p => ({
+                ...p,
+                currentSum: year === 'all' ? p.sum : (p.yearly[year] || 0)
+            }))
+            .filter(p => year === 'all' || p.currentSum !== 0)
+            .sort((a,b) => b.currentSum - a.currentSum);
+
             container.innerHTML = sorted.map((p, i) => `
                 <div class="rank-row p-4 flex justify-between items-center ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''}">
                     <div class="flex items-center gap-4">
                         <span class="w-6 font-black text-gray-400 italic">${i+1}</span>
-                        <div class="avatar-picker text-2xl" onclick="changeIcon(${i})">${p.icon}</div>
+                        <div class="text-2xl">${p.icon}</div>
                         <div>
                             <p class="font-black text-emerald-900">${p.name}</p>
                             <p class="text-[10px] text-gray-400 uppercase">${p.title}</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="font-black ${p.sum>=0?'text-emerald-600':'text-red-600'}">${p.sum>0?'+':''}${p.sum}</p>
+                        <p class="font-black ${p.currentSum>=0?'text-emerald-600':'text-red-600'}">${p.currentSum>0?'+':''}${p.currentSum}</p>
                         <p class="text-[10px] text-gray-400">${p.games} 場</p>
                     </div>
                 </div>
@@ -183,7 +149,7 @@
 
         function renderHall() {
             const grid = document.getElementById('hallGrid');
-            grid.innerHTML = DATA.players.map(p => `
+            grid.innerHTML = DATA.players.sort((a,b) => b.sum - a.sum).map(p => `
                 <div class="tile-card p-5 bg-white">
                     <div class="flex justify-between mb-4">
                         <div class="text-3xl">${p.icon}</div>
@@ -202,32 +168,33 @@
 
         function renderLogs() {
             const list = document.getElementById('logList');
-            list.innerHTML = DATA.logs.map(l => `
+            list.innerHTML = DATA.logs.sort((a,b) => b.d.localeCompare(a.d)).map(l => `
                 <tr>
                     <td class="p-4 text-gray-400 font-mono">${l.d}</td>
-                    <td class="p-4">${l.t}</td>
+                    <td class="p-4">港式台牌</td>
                     <td class="p-4 text-right ${l.s>=0?'text-emerald-600':'text-red-600'}">${l.s>0?'+':''}${l.s}</td>
                 </tr>
             `).join('');
         }
 
-        function changeIcon(index) {
-            let p = DATA.players[index];
-            let currentIdx = emojis.indexOf(p.icon);
-            p.icon = emojis[(currentIdx + 1) % emojis.length];
-            updateRank('all');
-            renderHall();
-        }
-
+        let myChart = null;
         function renderChart() {
             const ctx = document.getElementById('avaLineChart').getContext('2d');
-            new Chart(ctx, {
+            if (myChart) myChart.destroy();
+            
+            let cumulative = 0;
+            const chartData = DATA.logs.sort((a,b) => a.d.localeCompare(b.d)).map(l => {
+                cumulative += l.s;
+                return {x: l.d, y: cumulative};
+            });
+
+            myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: DATA.logs.map(l => l.d).reverse(),
+                    labels: chartData.map(d => d.x),
                     datasets: [{
-                        label: '累積盈虧',
-                        data: [68, 340, 1140, 1404, 1252, 1913],
+                        label: 'Ava 累積盈虧',
+                        data: chartData.map(d => d.y),
                         borderColor: '#064e3b',
                         borderWidth: 4,
                         fill: true,
@@ -235,7 +202,10 @@
                         tension: 0.3
                     }]
                 },
-                options: { maintainAspectRatio: false }
+                options: { 
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: false } }
+                }
             });
         }
 
@@ -243,7 +213,6 @@
             updateRank('all');
             renderHall();
             renderLogs();
-            document.getElementById('inDate').valueAsDate = new Date();
         };
     </script>
 </body>
