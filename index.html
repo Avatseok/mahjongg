@@ -29,7 +29,6 @@
     <div class="max-w-6xl mx-auto">
         <header class="text-center mb-10">
             <h1 class="text-5xl md:text-7xl title-font tracking-tighter mb-4">🀄️ 雀王爭霸戰 🀄️</h1>
-            <p class="text-emerald-100 font-bold opacity-80">數據更新：已整合 2024 CSV 最新戰績</p>
         </header>
 
         <nav class="flex flex-wrap justify-center gap-3 mb-10 text-sm">
@@ -59,10 +58,9 @@
         <div id="tab3" class="tab-content">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="tile-card p-6 text-center bg-white flex flex-col justify-center">
-                    <p class="text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">累積總盈虧 (TOTAL)</p>
+                    <p class="text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">累積總盈虧 (Ava TOTAL)</p>
                     <p class="text-6xl font-black text-emerald-600">+7677</p>
                 </div>
-                
                 <div class="md:col-span-2 tile-card p-6 bg-white">
                     <h3 class="font-black text-emerald-900 mb-4 border-b pb-2">📅 年度戰情 (Ava)</h3>
                     <div class="grid grid-cols-3 gap-4">
@@ -75,44 +73,8 @@
                             <p class="text-2xl font-black text-emerald-600">+3988</p>
                         </div>
                         <div class="text-center p-4 bg-gray-50 rounded-xl">
-                            <p class="text-[10px] font-bold text-gray-400">2024 (Updated)</p>
+                            <p class="text-[10px] font-bold text-gray-400">2024</p>
                             <p class="text-2xl font-black text-emerald-600">+1472</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="md:col-span-2 tile-card p-6 bg-white">
-                    <h3 class="font-black text-emerald-900 mb-4 border-b pb-2">🔮 牌局玄學 (基於 2024 數據)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                        <div>
-                            <p class="text-emerald-600 font-black mb-2">最旺貴人</p>
-                            <ul class="font-bold space-y-2 text-xs">
-                                <li class="flex justify-between">1. Haydrian <span class="text-emerald-500">+$2,450</span></li>
-                                <li class="flex justify-between">2. Yanyi <span class="text-emerald-500">+$1,580</span></li>
-                                <li class="flex justify-between">3. Annie <span class="text-emerald-500">+$1,120</span></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <p class="text-red-600 font-black mb-2">剋星天敵</p>
-                            <ul class="font-bold space-y-2 text-xs">
-                                <li class="flex justify-between">1. Jack <span class="text-red-500">-$1,840</span></li>
-                                <li class="flex justify-between">2. Wadee <span class="text-red-500">-$750</span></li>
-                                <li class="flex justify-between">3. Karis <span class="text-red-500">-$420</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="md:col-span-1 tile-card p-6 bg-white flex flex-col justify-center">
-                    <h3 class="font-black text-emerald-900 mb-4 border-b pb-2">🀄 玩法盈虧</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
-                            <span class="text-xs font-black text-blue-800">廣東牌</span>
-                            <span class="font-black text-blue-600">+$5,840</span>
-                        </div>
-                        <div class="flex justify-between items-center bg-emerald-50 p-3 rounded-lg">
-                            <span class="text-xs font-black text-emerald-800">港式台牌</span>
-                            <span class="font-black text-emerald-600">+$1,837</span>
                         </div>
                     </div>
                 </div>
@@ -122,30 +84,29 @@
         <div id="tab4" class="tab-content">
             <div id="logsContainer" class="space-y-4 max-w-2xl mx-auto"></div>
         </div>
-
-        <div id="tab5" class="tab-content">
-            <div class="max-w-xl mx-auto tile-card p-8 bg-white shadow-xl">
-                <h3 class="font-black text-emerald-900 mb-6 text-xl text-center">➕ 快速新增對局</h3>
-                </div>
-        </div>
     </div>
 
     <script>
         const ALL_PLAYERS = [
-            {"name": "Ava", "sum": 7677, "games": 107, "winRate": 58.2, "max": 800, "icon": "👑", "title": "雀壇傳奇", "comment": "數據級統治力，穩定輸出的雀壇長青樹。", "yearly": {"2024": 1472, "2025": 3988, "2026": 2217}},
-            {"name": "Yanyi", "sum": 369, "games": 27, "winRate": 40.7, "max": 492, "icon": "🎲", "title": "運氣一般", "comment": "2024大爆發後稍微回落，期待下一波手氣。", "yearly": {"2024": 1340, "2025": 0, "2026": -971}},
-            {"name": "Annie", "sum": 587, "games": 7, "winRate": 42.8, "max": 1032, "icon": "🔥", "title": "火力全開", "comment": "單局爆發力驚人，隨時一鋪清袋對手。", "yearly": {"2024": 124, "2025": 516, "2026": -53}},
-            {"name": "Colbert", "sum": 196, "games": 4, "winRate": 50.0, "max": 568, "icon": "👔", "title": "大方得體", "comment": "2024年度大贏家之一，戰術風格沉穩。", "yearly": {"2024": 628, "2025": -432, "2026": 0}},
-            {"name": "Don", "sum": -312, "games": 7, "winRate": 28.5, "max": 244, "icon": "🎩", "title": "紳士", "comment": "牌路多變，正在尋找最適合自己的節奏。", "yearly": {"2024": 272, "2025": -584, "2026": 0}},
-            {"name": "Charles", "sum": 52, "games": 6, "winRate": 66.7, "max": 220, "icon": "💎", "title": "鑽石玩家", "comment": "百戰百勝，出手精準的完美主義者。", "yearly": {"2024": 28, "2025": 0, "2026": 24}},
-            {"name": "Nat", "sum": 324, "games": 9, "winRate": 44.4, "max": 668, "icon": "🕶️", "title": "冷面笑匠", "comment": "高效率贏家，低調中收割全場積分。", "yearly": {"2024": -80, "2025": 0, "2026": 404}},
-            {"name": "Haydrian", "sum": -311, "games": 94, "winRate": 51.1, "max": 736, "icon": "💸", "title": "大慈善家", "comment": "經驗豐富但戰術激進，是大家的派錢之友。", "yearly": {"2024": 92, "2025": -228, "2026": -175}},
-            {"name": "Karis", "sum": -872, "games": 8, "winRate": 12.5, "max": 188, "icon": "🕊️", "title": "和平主義", "comment": "出牌溫和，對局中充滿紳士風度的玩家。", "yearly": {"2024": -424, "2025": -352, "2026": -96}},
-            {"name": "Wadee", "sum": -768, "games": 5, "winRate": 0.0, "max": 0, "icon": "🌊", "title": "隨風而去", "comment": "狀態隨風起伏，正在等待上風位的到來。", "yearly": {"2024": -700, "2025": 0, "2026": -68}},
-            {"name": "Tina", "sum": -1984, "games": 9, "winRate": 0.0, "max": 0, "icon": "📉", "title": "需要努力", "comment": "正處於職業生涯低潮，逆境求生中。", "yearly": {"2024": -940, "2025": -692, "2026": -352}},
-            {"name": "Kyros", "sum": -1212, "games": 6, "winRate": 33.3, "max": 112, "icon": "🔍", "title": "觀察者", "comment": "2024年度苦主，善於觀察但欠缺運氣。", "yearly": {"2024": -824, "2025": -388, "2026": 0}},
-            {"name": "Lailo", "sum": -1300, "games": 4, "winRate": 0.0, "max": 0, "icon": "💀", "title": "遺憾離場", "comment": "2024年底遭遇滑鐵盧，期待翻盤。", "yearly": {"2024": -1044, "2025": 0, "2026": 0}},
-            {"name": "Marco", "sum": 224, "games": 4, "winRate": 50.0, "max": 364, "icon": "🦁", "title": "實力派", "comment": "五五波戰神，能夠在混戰中保住根基。", "yearly": {"2024": 0, "2025": 488, "2026": -264}}
+            {"name": "Ava", "sum": 7677, "games": 108, "winRate": 58.3, "max": 800, "icon": "👑", "title": "雀壇傳奇", "comment": "統治 2024-2026 的長青樹，數據級的穩定輸出。", "yearly": {"2024": 1472, "2025": 3988, "2026": 2217}},
+            {"name": "Yanyi", "sum": 369, "games": 37, "winRate": 43.2, "max": 492, "icon": "🎲", "title": "波幅之王", "comment": "2024 贏到開巷 (+1340)，2026 暫時處於調整期。", "yearly": {"2024": 1340, "2025": 0, "2026": -971}},
+            {"name": "Annie", "sum": 918, "games": 12, "winRate": 41.6, "max": 1032, "icon": "🔥", "title": "爆發女神", "comment": "不論年度，只要她坐下就有清袋對手的爆發力。", "yearly": {"2024": 455, "2025": 516, "2026": -53}},
+            {"name": "Colbert", "sum": 196, "games": 6, "winRate": 50.0, "max": 568, "icon": "👔", "title": "優雅雀士", "comment": "進退有據，2024 的表現相當穩健。", "yearly": {"2024": 628, "2025": -432, "2026": 0}},
+            {"name": "Don", "sum": -164, "games": 11, "winRate": 36.3, "max": 244, "icon": "🎩", "title": "博弈紳士", "comment": "在 2024 表現優異，整體走勢正在回穩。", "yearly": {"2024": 420, "2025": -584, "2026": 0}},
+            {"name": "Charles", "sum": 320, "games": 7, "winRate": 85.7, "max": 220, "icon": "💎", "title": "鑽石之手", "comment": "勝率驚人，是所有對手都不想碰上的硬骨頭。", "yearly": {"2024": 296, "2025": 0, "2026": 24}},
+            {"name": "Nat", "sum": 364, "games": 11, "winRate": 54.5, "max": 668, "icon": "🕶️", "title": "冷面收割者", "comment": "悄悄地在 2026 找回 2024 失去的積分。", "yearly": {"2024": -40, "2025": 0, "2026": 404}},
+            {"name": "Haydrian", "sum": -631, "games": 101, "winRate": 48.5, "max": 736, "icon": "💸", "title": "大慈善家", "comment": "三年間貢獻良多，是推動雀界流動性的核心人物。", "yearly": {"2024": -228, "2025": -228, "2026": -175}},
+            {"name": "Karis", "sum": -1020, "games": 10, "winRate": 20.0, "max": 188, "icon": "🕊️", "title": "和平使者", "comment": "出牌極具紳士風度，始終貫徹不殺生原則。", "yearly": {"2024": -572, "2025": -352, "2026": -96}},
+            {"name": "Wadee", "sum": -800, "games": 7, "winRate": 14.3, "max": 0, "icon": "🌊", "title": "隨風而去", "comment": "仍在等待上風位的到來，目前的逆風是為了之後的飛翔。", "yearly": {"2024": -732, "2025": 0, "2026": -68}},
+            {"name": "Tina", "sum": -2352, "games": 14, "winRate": 0.0, "max": 0, "icon": "📉", "title": "逆境求生", "comment": "三年間經歷了不少黑暗時期，期待黎明的到來。", "yearly": {"2024": -1308, "2025": -692, "2026": -352}},
+            {"name": "Kyros", "sum": -1212, "games": 6, "winRate": 33.3, "max": 112, "icon": "🔍", "title": "深刻觀察", "comment": "2024 是他最想抹去的一年，正在磨練絕招。", "yearly": {"2024": -824, "2025": -388, "2026": 0}},
+            {"name": "Lailo", "sum": -1300, "games": 4, "winRate": 0.0, "max": 0, "icon": "💀", "title": "遺憾暫離", "comment": "2024 底遭遇重創，正閉關修煉中。", "yearly": {"2024": -1300, "2025": 0, "2026": 0}},
+            {"name": "Marco", "sum": 224, "games": 4, "winRate": 50.0, "max": 364, "icon": "🦁", "title": "實力獅王", "comment": "2025 的強者，2026 稍作休息。", "yearly": {"2024": 0, "2025": 488, "2026": -264}},
+            {"name": "Sunho", "sum": 367, "games": 1, "winRate": 100.0, "max": 367, "icon": "🦁", "title": "驚鴻一瞥", "comment": "一次亮相即展現巔峰戰力。", "yearly": {"2024": 0, "2025": 0, "2026": 367}},
+            {"name": "Carissa", "sum": 133, "games": 54, "winRate": 48.1, "max": 892, "icon": "🐱", "title": "穩健派", "comment": "2025 的重要參與者，基石型玩家。", "yearly": {"2024": 0, "2025": 440, "2026": -307}},
+            {"name": "Tony", "sum": 344, "games": 2, "winRate": 100.0, "max": 188, "icon": "💪", "title": "雙戰全勝", "comment": "兩場對局均以全勝告終，效率極高。", "yearly": {"2024": 0, "2025": 188, "2026": 156}},
+            {"name": "Emily", "sum": -1068, "games": 10, "winRate": 40.0, "max": 192, "icon": "⭐", "title": "博弈新星", "comment": "雖然總分告急，但單局爆發力不容小覷。", "yearly": {"2024": 0, "2025": -568, "2026": -500}},
+            {"name": "Jack", "sum": -1502, "games": 54, "winRate": 40.7, "max": 612, "icon": "🤡", "title": "首席福利官", "comment": "大家的快樂來源，堅持派錢的敬業玩家。", "yearly": {"2024": 0, "2025": -1284, "2026": -218}}
         ];
 
         function switchTab(id, btn) {
@@ -191,20 +152,28 @@
                     <h3 class="text-xl font-black text-emerald-900">${p.name}</h3>
                     <p class="text-[11px] text-emerald-700 font-bold mt-2 mb-4 leading-relaxed bg-emerald-50/50 p-2 rounded-lg italic w-full">"${p.comment}"</p>
                     <div class="grid grid-cols-2 gap-4 mt-auto text-[11px] font-bold text-gray-400 w-full pt-4 border-t border-gray-50">
-                        <div class="text-left">總盈虧: ${p.sum}</div><div class="text-right">2024: ${p.yearly[2024]}</div>
+                        <div class="text-left">總分: ${p.sum}</div><div class="text-right">最高單局: ${p.max}</div>
                     </div>
                 </div>
             `).join('');
 
-            // 流水帳
+            // 流水帳 - 整合 2024 至 2026
             const container = document.getElementById('logsContainer');
             const logs = [
+                // 2026
+                {d: "2026-04-08", t: "tai", s: "Ava +661, Annie -53, Haydrian -256, Tina -352"},
+                {d: "2026-03-25", t: "hk", s: "Ava +264, Yanyi +80, Haydrian -248, Karis -96"},
+                // 2024 (Selected from CSV)
                 {d: "2024-12-24", t: "tai", s: "Ava +84, Yanyi +196, Haydrian -132, Karis -148"},
                 {d: "2024-12-23", t: "tai", s: "Ava +88, Yanyi +80, Haydrian +88, Lailo -256"},
                 {d: "2024-12-21", t: "hk", s: "Ava -44, Yanyi +56, Haydrian -20, Nat +40, Wadee -32"},
                 {d: "2024-12-06", t: "tai", s: "Ava +4, Annie +384, Haydrian -20, Tina -368"},
-                {d: "2024-12-05", t: "tai", s: "Ava +272, Yanyi -144, Haydrian -176, Charles +48"},
-                {d: "2026-04-08", t: "tai", s: "Ava +661, Annie -53, Haydrian -256, Tina -352"}
+                {d: "2024-11-27", t: "tai", s: "Ava +68, Yanyi -228, Haydrian +180, Colbert -20"},
+                {d: "2024-11-03", t: "tai", s: "Ava +104, Yanyi +104, Haydrian -20, Karis -188"},
+                {d: "2024-10-07", t: "tai", s: "Ava +180, Yanyi +180, Haydrian -180, Kyros -180"},
+                {d: "2024-07-03", t: "hk", s: "Ava +724, Haydrian -352, Colbert -372"},
+                {d: "2024-02-19", t: "tai", s: "Ava +164, Yanyi +220, Haydrian -384"},
+                {d: "2024-01-01", t: "tai", s: "Ava -140, Yanyi +492, Haydrian -124, Tina -228"}
             ];
             container.innerHTML = logs.map(l => `
                 <div class="tile-card p-5 bg-white border-l-8 border-l-emerald-800">
