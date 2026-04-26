@@ -231,7 +231,7 @@ async function fetchData() {
                 console.error("❌ 連接失敗:", error);
             }
         }
-        window.onload = () => {
+        window.onload = async () => {
             await fetchData(); //
             renderRank('all');
             
