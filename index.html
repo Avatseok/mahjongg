@@ -223,16 +223,22 @@ let ALL_PLAYERS = [];
         }
 async function fetchData() {
     try {
+        // 記得 URL 後面要加 output=csv 
         const response = await fetch(CSV_URL);
         const csvText = await response.text();
-        const rows = csvText.split('\n').filter(row => row.trim() !== '');
-        const dataRows = rows.slice(1); // 跳過標題行
+        
+        // 分行，並過濾走空行
+        const rows = csvText.split(/\r?\n/).filter(row => row.trim() !== '');
+        
+        // 攞走標題行 (Name, Sum, Games...)
+        const dataRows = rows.slice(1); 
 
-        // 將數據存入 ALL_PLAYERS
         ALL_PLAYERS = dataRows.map(row => {
+            // 用逗號拆開，並順手清走格仔前後嘅空格
             const cols = row.split(',').map(c => c.trim());
+            
             return {
-                name: cols[0],
+                name: cols[0] || '無名氏',
                 sum: parseInt(cols[1]) || 0,
                 games: parseInt(cols[2]) || 0,
                 winRate: parseFloat(cols[3]) || 0,
@@ -247,9 +253,9 @@ async function fetchData() {
                 }
             };
         });
-        console.log("✅ 成功轉換數據:", ALL_PLAYERS);
+        console.log("✅ 成功入咗數:", ALL_PLAYERS);
     } catch (error) {
-        console.error("❌ 讀取失敗:", error);
+        console.error("❌ 抓取唔到 Google Sheet:", error);
     }
 }
         window.onload = async () => {
