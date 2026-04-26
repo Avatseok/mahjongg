@@ -232,6 +232,7 @@ async function fetchData() {
             }
         }
         window.onload = () => {
+            await fetchData(); //
             renderRank('all');
             
             // 名人堂
