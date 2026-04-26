@@ -222,7 +222,15 @@
             alert("搞掂！");
             location.reload();
         }
-
+async function fetchData() {
+            try {
+                const response = await fetch(CSV_URL);
+                const csvText = await response.text();
+                console.log("✅ 已成功連接 Google Sheet");
+            } catch (error) {
+                console.error("❌ 連接失敗:", error);
+            }
+        }
         window.onload = () => {
             renderRank('all');
             
