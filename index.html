@@ -56,8 +56,14 @@
             <div id="hallGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
-       <div id="tab3" class="tab-content">
-    <div id="personalContainer" class="max-w-4xl mx-auto">
+      <div id="tab3" class="tab-content">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6 flex items-center justify-between bg-emerald-900/80 p-4 rounded-2xl border border-emerald-700 shadow-xl">
+            <label class="text-white font-black text-sm italic">👤 切換玩家檔案：</label>
+            <select id="playerSelector" onchange="renderPersonal(this.value)" class="bg-white text-emerald-900 font-bold py-2 px-4 rounded-xl text-sm outline-none">
+                </select>
+        </div>
+        
         <div id="personalHero"></div>
     </div>
 </div>
@@ -138,37 +144,48 @@
 
         const formatName = (n) => n.trim().toLowerCase().charAt(0).toUpperCase() + n.trim().toLowerCase().slice(1);
 
-        async function init() {
-            try {
-                const response = await fetch(URL);
-                const csvText = await response.text();
-                const rows = csvText.split(/\r?\n/).filter(r => r.trim() !== '');
-                
-                rawData = rows.slice(1).map(row => {
-                const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/"/g, '').trim());
-                return { date: cols[0], type: cols[1], scores: cols[2], year: cols[0] ? cols[0].split('-')[0] : "" };
-            }).reverse(); // <--- 加呢一行，成個網頁嘅紀錄就會由新到舊排
-
-                processData();
+       async function init() {
+    try {
+        const response = await fetch(URL);
+        const csvText = await response.text();
+        const rows = csvText.split(/\r?\n/).filter(r => r.trim() !== '');
         
-        // 自動填充流水帳篩選選單
+        rawData = rows.slice(1).map(row => {
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/"/g, '').trim());
+            return { date: cols[0], type: cols[1], scores: cols[2], year: cols[0] ? cols[0].split('-')[0] : "" };
+        }).reverse();
+
+        processData();
+
+        // --- 同步所有選單 (流水帳選單 + 個人戰績選單) ---
         const logSelect = document.getElementById('logPlayerFilter');
+        const personalSelect = document.getElementById('playerSelector'); // 個人戰績個選單
+        const players = Object.keys(playerStats).sort();
+
+        // 填充流水帳選單
         if (logSelect) {
             logSelect.innerHTML = '<option value="all">所有玩家 (All)</option>';
-            Object.keys(playerStats).sort().forEach(name => {
-                const opt = document.createElement('option');
-                opt.value = name;
-                opt.innerText = name;
-                logSelect.appendChild(opt);
+            players.forEach(name => {
+                logSelect.innerHTML += `<option value="${name}">${name}</option>`;
+            });
+        }
+
+        // 填充個人戰績選單
+        if (personalSelect) {
+            personalSelect.innerHTML = ''; // 清空舊嘅
+            players.forEach(name => {
+                personalSelect.innerHTML += `<option value="${name}">${name}</option>`;
             });
         }
 
         renderAll();
         document.getElementById('status').innerText = "✅ DATA SYNCHRONIZED";
-            } catch (err) {
-                document.getElementById('status').innerText = "❌ LOAD FAILED";
-            }
-        }
+    } catch (err) {
+        document.getElementById('status').innerText = "❌ LOAD FAILED";
+        console.error(err);
+    }
+}
+
 
  function processData() {
     playerStats = {};
@@ -365,12 +382,21 @@
     }).join('');
 }
         // 呢段係新加嘅，直接貼喺 script 入面就得
-function renderPersonal() {
+function renderPersonal(targetName) {
     const container = document.getElementById('personalHero');
-    const p = playerStats['Ava'];
+    const selector = document.getElementById('playerSelector');
+    
+    // 如果冇傳名入嚟就用選單個名，或者預設 Ava
+    const nameToShow = targetName || (selector ? selector.value : 'Ava');
+    const p = playerStats[nameToShow];
     if (!p) return;
 
-    // 處理玄學數據：排序搵出最強貴人同剋星
+    // 2. 自動同步下拉式選單嘅位置
+    if (selector) {
+        selector.value = nameToShow;
+    }
+
+    // 3. 準備數據：排序搵出最強貴人同剋星
     const buddyList = Object.entries(p.buddies || {})
         .sort((a, b) => b[1] - a[1])
         .slice(0, 3);
@@ -378,12 +404,13 @@ function renderPersonal() {
         .sort((a, b) => a[1] - b[1])
         .slice(0, 3);
 
+    // 4. 渲染畫面 (將原本 Ava 換成 ${nameToShow}，加入 Math.round)
     container.innerHTML = `
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="tile-card p-6 text-center bg-white flex flex-col justify-center">
-                <p class="text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">累積總盈虧 (Ava)</p>
+                <p class="text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">累積總盈虧 (${nameToShow})</p>
                 <p class="text-6xl font-black ${p.total >= 0 ? 'text-emerald-600' : 'text-red-600'}">
-                    ${p.total > 0 ? '+' : ''}${p.total}
+                    ${p.total > 0 ? '+' : ''}${Math.round(p.total)}
                 </p>
             </div>
             
@@ -392,9 +419,9 @@ function renderPersonal() {
                 <div class="grid grid-cols-3 gap-4">
                     ${['2026', '2025', '2024'].map(yr => `
                         <div class="text-center p-4 bg-gray-50 rounded-xl">
-                            <p class="text-[10px] font-bold text-gray-400">${yr} </p>
+                            <p class="text-[10px] font-bold text-gray-400">${yr} YTD</p>
                             <p class="text-2xl font-black ${(p.yearly[yr]?.score || 0) >= 0 ? 'text-emerald-600' : 'text-red-600'}">
-                                ${(p.yearly[yr]?.score || 0) > 0 ? '+' : ''}${(p.yearly[yr]?.score || 0)}
+                                ${(p.yearly[yr]?.score || 0) > 0 ? '+' : ''}${Math.round(p.yearly[yr]?.score || 0)}
                             </p>
                         </div>
                     `).join('')}
@@ -405,15 +432,15 @@ function renderPersonal() {
                 <h3 class="font-black text-emerald-900 mb-4 border-b pb-2">🔮 牌局玄學</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                     <div>
-                        <p class="text-emerald-600 font-black mb-2">最旺貴人 (金錢來源)</p>
+                        <p class="text-emerald-600 font-black mb-2">💎 提款對象 (Top 3)</p>
                         <ul class="font-bold space-y-2 text-xs">
-                            ${buddyList.map((b, i) => `<li class="flex justify-between">${i+1}. ${b[0]} <span class="text-emerald-500">+$${Math.round(b[1])}</span></li>`).join('')}
+                            ${buddyList.map((b, i) => `<li class="flex justify-between border-b pb-1">${i+1}. ${b[0]} <span class="text-emerald-500">+$${Math.round(b[1])}</span></li>`).join('')}
                         </ul>
                     </div>
                     <div>
-                        <p class="text-red-600 font-black mb-2">剋星天敵 (最大債主)</p>
+                        <p class="text-red-600 font-black mb-2">💀 進貢對象 (Top 3)</p>
                         <ul class="font-bold space-y-2 text-xs">
-                            ${nemesisList.map((n, i) => `<li class="flex justify-between">${i+1}. ${n[0]} <span class="text-red-500">$${Math.round(n[1])}</span></li>`).join('')}
+                            ${nemesisList.map((n, i) => `<li class="flex justify-between border-b pb-1">${i+1}. ${n[0]} <span class="text-red-500">$${Math.round(n[1])}</span></li>`).join('')}
                         </ul>
                     </div>
                 </div>
@@ -424,11 +451,11 @@ function renderPersonal() {
                 <div class="space-y-3">
                     <div class="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
                         <span class="text-xs font-black text-blue-800">廣東牌</span>
-                        <span class="font-black text-blue-600">${p.typeBreakdown['hk'] > 0 ? '+' : ''}${p.typeBreakdown['hk'] || 0}</span>
+                        <span class="font-black text-blue-600">${p.typeBreakdown['hk'] > 0 ? '+' : ''}${Math.round(p.typeBreakdown['hk'] || 0)}</span>
                     </div>
                     <div class="flex justify-between items-center bg-emerald-50 p-3 rounded-lg">
                         <span class="text-xs font-black text-emerald-800">港式台牌</span>
-                        <span class="font-black text-emerald-600">${p.typeBreakdown['tai'] > 0 ? '+' : ''}${p.typeBreakdown['tai'] || 0}</span>
+                        <span class="font-black text-emerald-600">${p.typeBreakdown['tai'] > 0 ? '+' : ''}${Math.round(p.typeBreakdown['tai'] || 0)}</span>
                     </div>
                 </div>
             </div>
@@ -442,7 +469,7 @@ function renderPersonal() {
                     </div>
                     <div class="bg-emerald-50 p-4 rounded-xl text-center">
                         <p class="text-[10px] font-bold text-emerald-800">單局最高</p>
-                        <p class="text-3xl font-black text-emerald-600">+${p.maxWin}</p>
+                        <p class="text-3xl font-black text-emerald-600">+${Math.round(p.maxWin)}</p>
                     </div>
                     <div class="bg-blue-50 p-4 rounded-xl text-center">
                         <p class="text-[10px] font-bold text-blue-800">總勝率</p>
