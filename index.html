@@ -259,8 +259,15 @@ async function fetchData() {
     }
 }
         window.onload = async () => {
-    await fetchData(); // 等數據抓完
+    console.log("🚀 程式開始，準備攞數據...");
     
+    // 先畫個簡單嘅 Loading 喺龍虎榜位
+    document.getElementById('rankContainer').innerHTML = "<p class='p-4 text-gray-500'>數據載入中...</p>";
+
+    await fetchData(); 
+    
+    console.log("📊 目前 ALL_PLAYERS 長度:", ALL_PLAYERS.length);
+
     if (ALL_PLAYERS.length > 0) {
         renderRank('all');
             
