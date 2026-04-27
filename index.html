@@ -386,14 +386,14 @@ function renderPersonal(targetName) {
     const container = document.getElementById('personalHero');
     const selector = document.getElementById('playerSelector');
     
-    // 如果冇傳名入嚟就用選單個名，或者預設 Ava
+    // 優先順序：傳入的名字 > 下拉選單選中的名字 > 預設 Ava
     const nameToShow = targetName || (selector ? selector.value : 'Ava');
     const p = playerStats[nameToShow];
+    
     if (!p) return;
 
-    // 2. 自動同步下拉式選單嘅位置
-    if (selector) {
-        selector.value = nameToShow;
+    // 同步下拉選單的顯示文字
+    if (selector) selector.value = nameToShow;
     }
 
     // 3. 準備數據：排序搵出最強貴人同剋星
@@ -488,7 +488,7 @@ function renderPersonal(targetName) {
             renderRankTable('all');
             renderHall();
             renderLogs();
-            renderPersonal();
+            renderPersonal('Ava');
         }
 function viewPlayer(name) {
     // 1. 先將 Ava 嘅 logic 暫時套用到點擊嘅人身上 (如果你想睇嗰個人嘅數據)
