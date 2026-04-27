@@ -201,7 +201,8 @@
         matchSummary.forEach(me => {
             if (!playerStats[me.name]) {
                 playerStats[me.name] = { 
-                    total: 0, games: 0, wins: 0, maxWin: 0, 
+                    total: 0, games: 0, wins: 0, maxWin: 0,  // 贏最多
+        minWin: 0,
                     maxStreak: 0, currentStreak: 0,
                     yearly: {}, typeBreakdown: { 'hk': 0, 'tai': 0 }, 
                     buddies: {} 
@@ -219,6 +220,8 @@
             } else { p.currentStreak = 0; }
             
             if (me.score > p.maxWin) p.maxWin = me.score;
+            if (me.score < p.minWin) p.minWin = me.score; // 紀錄最低分 (新加)
+            
             if (!p.yearly[match.year]) p.yearly[match.year] = { score: 0, games: 0 };
             p.yearly[match.year].score += me.score;
             p.yearly[match.year].games += 1;
@@ -462,21 +465,29 @@ function renderPersonal(targetName) {
             <div class="md:col-span-3 tile-card p-6 bg-white">
                 <h3 class="font-black text-emerald-900 mb-4 border-b pb-2 text-center">🏅 生涯成就</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-amber-50 p-4 rounded-xl text-center">
-                        <p class="text-[10px] font-bold text-amber-800">最高連勝</p>
-                        <p class="text-3xl font-black text-amber-600">${p.maxStreak || 0} 局</p>
-                    </div>
-                    <div class="bg-emerald-50 p-4 rounded-xl text-center">
-                        <p class="text-[10px] font-bold text-emerald-800">單局最高</p>
-                        <p class="text-3xl font-black text-emerald-600">+${Math.round(p.maxWin)}</p>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-xl text-center">
-                        <p class="text-[10px] font-bold text-blue-800">總勝率</p>
-                        <p class="text-3xl font-black text-blue-600">${((p.wins / p.games) * 100).toFixed(1)}%</p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-xl text-center">
-                        <p class="text-[10px] font-bold text-gray-800">總對局數</p>
-                        <p class="text-3xl font-black text-gray-600">${p.games}</p>
+                   <div class="bg-emerald-50 p-4 rounded-xl text-center border border-emerald-100">
+            <p class="text-[10px] font-bold text-emerald-800 uppercase">一局贏最多</p>
+            <p class="text-3xl font-black text-emerald-600">+${Math.round(p.maxWin || 0)}</p>
+        </div>
+        <div class="bg-red-50 p-4 rounded-xl text-center border border-red-100">
+            <p class="text-[10px] font-bold text-red-800 uppercase">一局輸最多</p>
+            <p class="text-3xl font-black text-red-600">${Math.round(p.minWin || 0)}</p>
+        </div>
+        <div class="bg-amber-50 p-4 rounded-xl text-center border border-amber-100">
+            <p class="text-[10px] font-bold text-amber-800 uppercase">最高連勝</p>
+            <p class="text-3xl font-black text-amber-600">${p.maxStreak || 0} 局</p>
+        </div>
+        <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
+            <p class="text-[10px] font-bold text-blue-800 uppercase">總勝率</p>
+            <p class="text-3xl font-black text-blue-600">${((p.wins / p.games) * 100).toFixed(1)}%</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-xl text-center border border-gray-100">
+            <p class="text-[10px] font-bold text-gray-800 uppercase">總對局數</p>
+            <p class="text-3xl font-black text-gray-600">${p.games}</p>
+        </div>
+        <div class="bg-indigo-50 p-4 rounded-xl text-center border border-indigo-100">
+            <p class="text-[10px] font-bold text-indigo-800 uppercase">目前狀態</p>
+            <p class="text-3xl font-black text-indigo-600">${p.currentStreak > 0 ? p.currentStreak + ' 連勝' : '---'}</p>
                     </div>
                 </div>
             </div>
