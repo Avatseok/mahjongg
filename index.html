@@ -484,23 +484,12 @@ function renderPersonal(targetName) {
         </div>
     `;
 }
-        function renderAll() {
+function renderAll() {
             renderRankTable('all');
             renderHall();
             renderLogs();
             renderPersonal('Ava');
         }
-function viewPlayer(name) {
-    // 1. 先將 Ava 嘅 logic 暫時套用到點擊嘅人身上 (如果你想睇嗰個人嘅數據)
-    // 注意：目前 renderPersonal 係 hardcode 咗睇 'Ava'，
-    // 如果要睇所有人，需要將 renderPersonal 改成接受參數，呢個你可以遲啲再改。
-    
-    // 2. 切換去 Tab 3
-    const personalBtn = document.querySelectorAll('.nav-btn')[2]; // 第三個掣
-    switchTab('tab3', personalBtn);
-    
-    // 3. 畫面捲動返上去
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
         window.onload = init;
     </script>
